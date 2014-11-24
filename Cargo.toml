@@ -5,4 +5,4 @@ version = "0.0.1"
 authors = ["Dean4Devil <dean4devil@chaingamers.com>"]
 
 [dependencies.hyper]
-git = "https://github.com/hyperium/hyper"
+path = "lib/hyper"
