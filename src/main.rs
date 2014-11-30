@@ -1,18 +1,20 @@
-#![feature(macro_rules, phase)]
+#![feature(globs)]
 
-extern crate hyper;
+extern crate iron;
+extern crate router;
 
-use std::io::net::ip::Ipv4Addr;
+use iron::prelude::*;
 
-use hyper::{Get, Post};
-use hyper::header::common::ContentLength;
-use hyper::server::{Server, Request, Response};
+use router::Router;
 
 use redstart::serve;
 
 mod redstart;
 
 fn main() {
-    let server = Server::http(Ipv4Addr(127,0,0,1), 8080);
-    server.listen(serve).unwrap();
+    let mut router = Router::new();
+    router.get("/:controller/:model", serve);
+
+    Iron::new(router).listen("localhost:3000").unwrap();
+    println!("On 3000");
 }

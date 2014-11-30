@@ -1,3 +1,0 @@
-[submodule "lib/hyper"]
-	path = lib/hyper
-	url = https://github.com/hyperium/hyper.git

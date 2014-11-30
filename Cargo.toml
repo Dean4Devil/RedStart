@@ -4,5 +4,8 @@ name = "RedStart"
 version = "0.0.1"
 authors = ["Dean4Devil <dean4devil@chaingamers.com>"]
 
-[dependencies.hyper]
-path = "lib/hyper"
+[dependencies]
+iron = "~0.0.5"
+
+[dependencies.router]
+git = "https://github.com/iron/router.git"
