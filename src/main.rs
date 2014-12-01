@@ -1,20 +1,23 @@
 #![feature(globs)]
 
 extern crate iron;
-extern crate router;
 
 use iron::prelude::*;
 
-use router::Router;
+use iron::ChainBuilder;
 
-use redstart::serve;
+use redstart::Router;
+use redstart::Logger;
+use redstart::RedStart;
 
 mod redstart;
 
 fn main() {
-    let mut router = Router::new();
-    router.get("/:controller/:model", serve);
+    let mut chain = ChainBuilder::new(RedStart);
+    chain.link_before(Router);
+    let mut logger = Logger::new("log.txt");
+    chain.link_after(logger); 
 
-    Iron::new(router).listen("localhost:3000").unwrap();
+    Iron::new(chain).listen("localhost:3000").unwrap();
     println!("On 3000");
 }
