@@ -3,6 +3,8 @@ use iron::Handler;
 use iron::response::modifiers::{Status, Body};
 use iron::status;
 
+use self::
+
 // Re-export Logger and Router so you can use redstart::Router instead of redstart::router::Router.
 pub use self::logger::Logger;
 pub use self::urlparser::URLParser;
@@ -26,6 +28,16 @@ impl Handler for RedStart
 {
     fn call(&self, _: &mut Request) -> IronResult<Response>
     {
+        // Define some arbitrary variables. ToDo: These should be set by URLParser later on
+        let controller = Controller::Reservation;
+
+        match controller
+        {
+            User => {},
+            Reservation => {},
+            Administration => {},
+        }
+
         Ok(Response::new().set(Status(status::Ok)).set(Body("Hello world!\n")))
     }
 
