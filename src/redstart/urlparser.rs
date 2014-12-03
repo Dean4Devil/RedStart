@@ -3,9 +3,6 @@ use iron::{BeforeMiddleware, Error};
 
 use queryst::parse;
 
-// Re-export recognizer::Params as router::Params
-pub use recognizer::Params;
-
 // Errors for the win!
 #[deriving(Show)]
 pub struct MalformedRequest;
