@@ -1,6 +1,7 @@
 #![feature(globs)]
 
 extern crate iron;
+extern crate "route-recognizer" as recognizer;
 
 use iron::prelude::*;
 
