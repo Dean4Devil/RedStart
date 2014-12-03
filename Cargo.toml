@@ -6,6 +6,4 @@ authors = ["Dean4Devil <dean4devil@chaingamers.com>"]
 
 [dependencies]
 iron = "~0.0.5"
-
-[dependencies.router]
-git = "https://github.com/iron/router.git"
+route-recognizer = "*"

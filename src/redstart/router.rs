@@ -1,3 +1,4 @@
+extern crate "route-recognizer" as recognizer;
 use iron::prelude::*;
 use iron::BeforeMiddleware;
 
