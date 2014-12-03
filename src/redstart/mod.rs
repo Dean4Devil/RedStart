@@ -15,6 +15,13 @@ mod permission;
 
 pub struct RedStart;
 
+pub enum Controller
+{
+    Reservation,
+    Administration,
+    User,
+}
+
 impl Handler for RedStart
 {
     fn call(&self, _: &mut Request) -> IronResult<Response>
