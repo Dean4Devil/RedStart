@@ -24,12 +24,14 @@ impl Handler for RedStart
 
     fn catch(&self, _: &mut Request, err: IronError) -> (Response, IronResult<()>)
     {
-        println!("{}\n", err);
-
-        (Response::new()
-            .set(Status(status::InternalServerError))
-            .set(Body(format!("I encountered Error {} which is not handled!", err))),
-         Ok(()))
+        // Its definetely *not* pretty. But it works.
+        match err.name()
+        {
+            "NotLoggedIn" => { (Response::new().set(Status(status::Unauthorized)), Ok(())) },
+            "InsufficientPermissions" => { (Response::new().set(Status(status::Forbidden)), Ok(())) },
+            "NoRoute" => { (Response::new().set(Status(status::NotFound)), Ok(())) },
+            "MalformedRequest" => { (Response::new().set(Status(status::BadRequest)), Ok(())) },
+            _ => { (Response::new().set(Status(status::InternalServerError)), Ok(())) },
+        }
     }
 }
-

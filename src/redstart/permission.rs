@@ -7,7 +7,7 @@ impl BeforeMiddleware for PermCheck
 {
     fn before(&self, req: &mut Request) -> IronResult<()>
     {
-        Err(box NotLoggedIn as IronError)
+        Ok(())
     }
 }
 
@@ -18,10 +18,10 @@ pub struct NotLoggedIn;
 
 impl Error for InsufficientPermissions
 {
-    fn name(&self) -> &'static str { "The request has insufficient permission for this action" }
+    fn name(&self) -> &'static str { "InsufficientPermissions" }
 }
 
 impl Error for NotLoggedIn
 {
-    fn name(&self) -> &'static str { "This action requires an authenticated user" }
+    fn name(&self) -> &'static str { "NotLoggedIn" }
 }

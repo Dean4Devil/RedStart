@@ -12,12 +12,12 @@ pub struct NotFound;
 
 impl Error for MalformedRequest
 {
-    fn name(&self) -> &'static str { "Malformed Request" }
+    fn name(&self) -> &'static str { "MalformedRequest" }
 }
 
 impl Error for NotFound
 {
-    fn name(&self) -> &'static str { "No route" }
+    fn name(&self) -> &'static str { "NoRoute" }
 }
 
 // The actual URLParser struct
