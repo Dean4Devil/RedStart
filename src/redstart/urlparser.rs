@@ -8,28 +8,28 @@ pub use recognizer::Params;
 #[deriving(Show)]
 pub struct MalformedRequest;
 #[deriving(Show)]
-pub struct NoRoute;
+pub struct NotFound;
 
 impl Error for MalformedRequest
 {
     fn name(&self) -> &'static str { "Malformed Request" }
 }
 
-impl Error for NoRoute
+impl Error for NotFound
 {
     fn name(&self) -> &'static str { "No route" }
 }
 
-/// The actual Router struct
-pub struct Router;
+// The actual URLParser struct
+pub struct URLParser;
 
-impl Router
+impl URLParser
 {
     
 }
 
-/// Make Router a BeforeMiddleware
-impl BeforeMiddleware for Router
+// Make URLParser a BeforeMiddleware
+impl BeforeMiddleware for URLParser
 {
     fn before(&self, req: &mut Request) -> IronResult<()>
     {

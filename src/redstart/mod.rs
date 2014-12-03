@@ -5,11 +5,11 @@ use iron::status;
 
 // Re-export Logger and Router so you can use redstart::Router instead of redstart::router::Router.
 pub use self::logger::Logger;
-pub use self::router::Router;
+pub use self::urlparser::URLParser;
 pub use self::permission::PermCheck;
 
 mod logger;
-mod router;
+mod urlparser;
 mod permission;
 // End Re-export
 
