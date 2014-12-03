@@ -1,6 +1,8 @@
 use iron::prelude::*;
 use iron::{BeforeMiddleware, Error};
 
+use queryst::parse;
+
 // Re-export recognizer::Params as router::Params
 pub use recognizer::Params;
 
@@ -25,7 +27,7 @@ pub struct URLParser;
 
 impl URLParser
 {
-    
+
 }
 
 // Make URLParser a BeforeMiddleware
@@ -37,5 +39,3 @@ impl BeforeMiddleware for URLParser
         Ok(())
     }
 }
-
-
