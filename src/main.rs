@@ -1,7 +1,7 @@
 #![feature(globs)]
 
 extern crate iron;
-extern crate "route-recognizer" as recognizer;
+extern crate url;
 
 use iron::prelude::*;
 
@@ -19,7 +19,7 @@ fn main() {
     chain.link_before(URLParser);
     chain.link_before(PermCheck);
     let mut logger = Logger::new("log.txt");
-    chain.link_after(logger); 
+    chain.link_after(logger);
 
     Iron::new(chain).listen("localhost:3000").unwrap();
     println!("On 3000");

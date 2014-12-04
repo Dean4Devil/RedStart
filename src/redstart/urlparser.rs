@@ -1,8 +1,7 @@
 use iron::prelude::*;
 use iron::{BeforeMiddleware, Error};
 
-// Re-export recognizer::Params as router::Params
-pub use recognizer::Params;
+use url::{Url, SchemeData};
 
 // Errors for the win!
 #[deriving(Show)]
@@ -25,7 +24,7 @@ pub struct URLParser;
 
 impl URLParser
 {
-    
+
 }
 
 // Make URLParser a BeforeMiddleware
@@ -33,9 +32,51 @@ impl BeforeMiddleware for URLParser
 {
     fn before(&self, req: &mut Request) -> IronResult<()>
     {
-        // Currently do precisely nothing
-        Ok(())
+        if(check_url(req))
+        {
+        	Ok(())
+        }
+        else
+        {
+        	Err(box MalformedRequest as IronError)
+        }
     }
 }
 
+fn check_url(req: &mut Request) -> bool
+{
+	let parsed = Url::parse(req.url.to_string().as_slice()).ok().unwrap();
+	let path = parsed.path();
+	println!("{}\n{}", path, path.unwrap().len());
+	if(path.unwrap()[0] != "".to_string() || path.unwrap().len() != 1)
+	{
+		return false;
+	}
 
+	let mut found = false;
+    // This one returns an Option
+    let mut query: Vec<(String, String)>;
+    query = match parsed.query_pairs()
+    {
+        Some(query) => { query },
+        None => { vec![("r".to_string(), "".to_string())] },
+    };
+
+	let get = "r".to_string();
+
+    // ToDo: This parses the whole query string, no matter if that is actually necessary. We could
+    // change that, or parse the whole query string and save its values so the handler does not
+    // have to parse it.
+    for x in query.iter()
+	{
+		match x
+		{
+			&(ref get, ref value) if get == &"r".to_string() =>
+            { 
+                found = value.contains("/");
+            },
+			&(_, _) => { },
+		};
+	}
+    return found;
+}
