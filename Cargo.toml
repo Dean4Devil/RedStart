@@ -5,5 +5,5 @@ version = "0.0.1"
 authors = ["Dean4Devil <dean4devil@chaingamers.com>"]
 
 [dependencies]
-iron = "~0.0.5"
-url = "~0.2.1"
+iron = "0.0.6"
+queryst = "0.1.1"
