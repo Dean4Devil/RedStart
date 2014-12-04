@@ -48,39 +48,34 @@ impl BeforeMiddleware for URLParser
 fn check_url(req: &mut Request) -> bool
 {
 	let parsed = Url::parse(req.url.to_string().as_slice()).ok().unwrap();
-	println!("{}", parsed);
 	let path = parsed.path();
-	if((path.unwrap()[0] != "".to_string()) & (path.unwrap().len() != 1))
+	println!("{}\n{}", path, path.unwrap().len());
+	if(path.unwrap()[0] != "".to_string() || path.unwrap().len() != 1)
 	{
 		return false;
 	}
 
 	let mut found = false;
-	let query = parsed.query_pairs().unwrap();
+    // This one returns an Option
+    let mut query: Vec<(String, String)>;
+    query = match parsed.query_pairs()
+    {
+        Some(query) => { query },
+        None => { vec![("r".to_string(), "".to_string())] },
+    };
 
-	for x in query.iter()
+	let get = String::from_str("r");
+
+    for x in query.iter()
 	{
-		let r = "r".to_string();
-		let val = match x
+		match x
 		{
-			&(ref r, ref value) => { value },
-			// (_, value) => {continue;},
+			&(ref get, ref value) =>
+            { 
+                found = value.contains("/");
+            },
+			// &(_, _) => { false },
 		};
-
-		if(!val.contains("/"))
-		{
-			return false;
-		}
-		else
-		{
-			found = true;
-		}
 	}
-	
-	if(found != true)
-	{
-		return false;
-	}
-
-	true
+    return found;
 }
