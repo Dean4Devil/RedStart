@@ -2,6 +2,7 @@ use iron::prelude::*;
 use iron::{BeforeMiddleware, Error};
 
 use url::{Url, SchemeData};
+use queryst;
 
 // Errors for the win!
 #[deriving(Show)]
@@ -46,37 +47,23 @@ impl BeforeMiddleware for URLParser
 fn check_url(req: &mut Request) -> bool
 {
 	let parsed = Url::parse(req.url.to_string().as_slice()).ok().unwrap();
-	let path = parsed.path();
-	println!("{}\n{}", path, path.unwrap().len());
-	if(path.unwrap()[0] != "".to_string() || path.unwrap().len() != 1)
-	{
-		return false;
-	}
-
-	let mut found = false;
-    // This one returns an Option
-    let mut query: Vec<(String, String)>;
-    query = match parsed.query_pairs()
     {
-        Some(query) => { query },
-        None => { vec![("r".to_string(), "".to_string())] },
-    };
+    	let path = parsed.path();
+    	if(path.unwrap()[0] != "".to_string() || path.unwrap().len() != 1)
+    	{
+    		return false;
+    	}
+    }
 
-	let get = "r".to_string();
+    println!("{}", parsed.query);
+    if parsed.query.is_none()
+    {
+        return false;
+    }
 
-    // ToDo: This parses the whole query string, no matter if that is actually necessary. We could
-    // change that, or parse the whole query string and save its values so the handler does not
-    // have to parse it.
-    for x in query.iter()
-	{
-		match x
-		{
-			&(ref get, ref value) if get == &"r".to_string() =>
-            { 
-                found = value.contains("/");
-            },
-			&(_, _) => { },
-		};
-	}
-    return found;
+    let qs = queryst::parse(parsed.query.unwrap().as_slice());
+    println!("{}", qs);
+
+    return false
+
 }

@@ -2,6 +2,7 @@
 
 extern crate iron;
 extern crate url;
+extern crate queryst;
 
 use iron::prelude::*;
 
