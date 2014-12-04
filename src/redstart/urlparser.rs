@@ -47,24 +47,23 @@ impl BeforeMiddleware for URLParser
 
 fn check_url(req: &mut Request) -> bool
 {
-	let parsed = Url::parse(req.url.to_string().as_slice()).ok();
+	let parsed = Url::parse(req.url.to_string().as_slice()).ok().unwrap();
 	println!("{}", parsed);
-	let path = parsed.unwrap().path()
+	let path = parsed.path();
 	if((path.unwrap()[0] != "".to_string()) & (path.unwrap().len() != 1))
 	{
 		return false;
 	}
 
 	let mut found = false;
-	let unwrapped = parsed.unwrap();
-	let query = unwrapped.query_pairs().unwrap();
+	let query = parsed.query_pairs().unwrap();
 
 	for x in query.iter()
 	{
 		let r = "r".to_string();
-		let val = match *x
+		let val = match x
 		{
-			(r, value) => value,
+			&(ref r, ref value) => { value },
 			// (_, value) => {continue;},
 		};
 
