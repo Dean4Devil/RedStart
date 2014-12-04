@@ -62,7 +62,7 @@ fn check_url(req: &mut Request) -> bool
         None => { vec![("r".to_string(), "".to_string())] },
     };
 
-	let get = String::from_str("r");
+	let get = "r".to_string();
 
     // ToDo: This parses the whole query string, no matter if that is actually necessary. We could
     // change that, or parse the whole query string and save its values so the handler does not
@@ -71,11 +71,11 @@ fn check_url(req: &mut Request) -> bool
 	{
 		match x
 		{
-			&(ref get, ref value) =>
+			&(ref get, ref value) if get == &"r".to_string() =>
             { 
                 found = value.contains("/");
             },
-			// &(_, _) => { false },
+			&(_, _) => { },
 		};
 	}
     return found;
