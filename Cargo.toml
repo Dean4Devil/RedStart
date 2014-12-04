@@ -6,4 +6,4 @@ authors = ["Dean4Devil <dean4devil@chaingamers.com>"]
 
 [dependencies]
 iron = "~0.0.5"
-queryst = "~0.1.0"
+url = "~0.2.1"

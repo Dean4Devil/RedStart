@@ -1,7 +1,7 @@
 #![feature(globs)]
 
 extern crate iron;
-extern crate queryst;
+extern crate url;
 
 use iron::prelude::*;
 
