@@ -32,8 +32,6 @@ impl BeforeMiddleware for URLParser
 {
     fn before(&self, req: &mut Request) -> IronResult<()>
     {
-        // Currently do precisely nothing
-        println!("{}", req);
         if(check_url(req))
         {
         	Ok(())
@@ -66,6 +64,9 @@ fn check_url(req: &mut Request) -> bool
 
 	let get = String::from_str("r");
 
+    // ToDo: This parses the whole query string, no matter if that is actually necessary. We could
+    // change that, or parse the whole query string and save its values so the handler does not
+    // have to parse it.
     for x in query.iter()
 	{
 		match x
