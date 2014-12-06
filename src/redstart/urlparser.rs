@@ -1,8 +1,9 @@
 use iron::prelude::*;
 use iron::{BeforeMiddleware, Error};
+use iron::typemap::Assoc;
 
-use url::{Url, SchemeData};
 use queryst;
+use serialize::json;
 
 // Errors for the win!
 #[deriving(Show)]
@@ -23,7 +24,7 @@ impl Error for NotFound
 // The actual URLParser struct
 pub struct URLParser;
 
-impl URLParser
+impl Assoc<&'static [&'static str]> for URLParser
 {
 
 }
@@ -33,7 +34,7 @@ impl BeforeMiddleware for URLParser
 {
     fn before(&self, req: &mut Request) -> IronResult<()>
     {
-        if(check_url(req))
+        if(check_url(req).is_ok())
         {
         	Ok(())
         }
@@ -44,26 +45,50 @@ impl BeforeMiddleware for URLParser
     }
 }
 
-fn check_url(req: &mut Request) -> bool
+fn check_url(req: &mut Request) -> Result<(), ()>
 {
-	let parsed = Url::parse(req.url.to_string().as_slice()).ok().unwrap();
+    let url2 = req.url.clone();
+    if url2.path == vec!["".to_string()]
     {
-    	let path = parsed.path();
-    	if(path.unwrap()[0] != "".to_string() || path.unwrap().len() != 1)
-    	{
-    		return false;
-    	}
+        // query type String
+        let mut query = match url2.query
+        {
+            Some(e) => e,
+            None => return Err(()),
+        };
+
+        // qs type &str
+        let qs = query.as_slice();
+
+        // query_json type Json
+        let mut query_json = match queryst::parse(qs)
+        {
+            Ok(e) => e.clone(),
+            Err(_) => return Err(()),
+        };
+
+        // ... does not live long enough ...
+        let mut route_json = match query_json.find("r")
+        {
+            Some(e) => e.clone(),
+            None => return Err(()),
+        };
+
+        let mut route_string = match route_json.as_string()
+        {
+            Some(e) => e,
+            None => return Err(()),
+        };
+
+        if route_string.contains("/")
+        {
+            let mut route_it = route_string.split('/');
+            let mut route_vec = vec![route_it.next().unwrap().clone(), route_it.next().unwrap().clone()];
+            req.extensions.insert::<URLParser, &[&str]>(route_vec.as_slice().clone());
+            return Ok(())
+        }
     }
 
-    println!("{}", parsed.query);
-    if parsed.query.is_none()
-    {
-        return false;
-    }
-
-    let qs = queryst::parse(parsed.query.unwrap().as_slice());
-    println!("{}", qs);
-
-    return false
+    Err(())
 
 }
