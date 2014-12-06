@@ -9,14 +9,26 @@ use iron::prelude::*;
 
 use iron::ChainBuilder;
 
+use controller::Reservation;
+
 use redstart::URLParser;
 use redstart::PermCheck;
 use redstart::Logger;
 use redstart::RedStart;
 
+mod controller;
+
+mod model;
+
 mod redstart;
 
-fn main() {
+fn setup()
+{
+}
+
+fn main()
+{
+    setup();
     let mut chain = ChainBuilder::new(RedStart);
     chain.link_before(URLParser);
     chain.link_before(PermCheck);
