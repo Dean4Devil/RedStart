@@ -22,8 +22,14 @@ impl Handler for RedStart
     fn call(&self, req: &mut Request) -> IronResult<Response>
     {
         // Define some arbitrary variables. ToDo: These should be set by URLParser later on
-        let controller = "reservation";
-        let model = "timetable";
+        let controller: &str;
+        let model: &str;
+
+        {
+            let req_ext = req.extensions.get::<URLParser, &'static [&'static str]>().unwrap(); // If this panics, URLParser has a bug! :D
+            controller = req_ext[0].clone();
+            model = req_ext[1].clone();
+        }
 
         let status: Status;
         let body: &str;
@@ -32,7 +38,7 @@ impl Handler for RedStart
 
         let (status, body) = match controller
         {
-            "reservation" => { reservation.call(req) },
+            "reservation" => { reservation.call(model, req) },
             _ => 
             {
                 (Status(status::NotFound), "".to_string())
