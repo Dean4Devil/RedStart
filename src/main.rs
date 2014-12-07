@@ -4,6 +4,7 @@ extern crate iron;
 extern crate url;
 extern crate queryst;
 extern crate serialize;
+extern crate toml;
 
 use iron::prelude::*;
 
