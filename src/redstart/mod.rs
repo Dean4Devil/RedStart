@@ -9,10 +9,12 @@ use controller::Reservation;
 pub use self::logger::Logger;
 pub use self::urlparser::URLParser;
 pub use self::permission::PermCheck;
+pub use self::configreader::ConfigReader;
 
 mod logger;
 mod urlparser;
 mod permission;
+mod configreader;
 // End Re-export
 
 pub struct RedStart;
@@ -39,7 +41,7 @@ impl Handler for RedStart
         let (status, body) = match controller
         {
             "reservation" => { reservation.call(model, req) },
-            _ => 
+            _ =>
             {
                 (Status(status::NotFound), "".to_string())
             },

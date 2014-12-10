@@ -12,6 +12,7 @@ use iron::ChainBuilder;
 
 use controller::Reservation;
 
+use redstart::ConfigReader;
 use redstart::URLParser;
 use redstart::PermCheck;
 use redstart::Logger;
@@ -25,6 +26,9 @@ mod redstart;
 
 fn setup()
 {
+  let mut config_reader = ConfigReader::new();
+  let value = config_reader.get_string("General.name").unwrap();
+  println!("{}: Config Loaded", value);
 }
 
 fn main()
