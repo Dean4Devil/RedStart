@@ -5,5 +5,7 @@ version = "0.0.1"
 authors = ["Dean4Devil <dean4devil@chaingamers.com>"]
 
 [dependencies]
+hyper = "~0.0.8"
 iron = "0.0.6"
 queryst = "0.1.1"
+toml = "~0.1.3"
