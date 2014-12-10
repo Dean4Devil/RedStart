@@ -1,0 +1,6 @@
+[submodule "lib/hyper"]
+	path = lib/hyper
+	url = https://github.com/hyperium/hyper.git
+[submodule "lib/iron"]
+	path = lib/iron
+	url = https://github.com/iron/iron.git
