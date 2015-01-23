@@ -1,6 +1,6 @@
 use iron::prelude::*;
 use iron::{BeforeMiddleware, Error};
-use iron::typemap::Assoc;
+use iron::typemap::Key;
 
 use queryst;
 use serialize::json;
@@ -40,7 +40,7 @@ impl BeforeMiddleware for URLParser
         }
         else
         {
-        	Err(box MalformedRequest as IronError)
+        	Err(Box::new(MalformedRequest) as IronError)
         }
     }
 }

@@ -1,5 +1,3 @@
-#![feature(globs)]
-
 extern crate iron;
 extern crate url;
 extern crate queryst;
