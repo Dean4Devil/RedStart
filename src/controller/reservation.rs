@@ -1,6 +1,5 @@
 use iron::prelude::*;
-use iron::response::modifiers::Status;
-use iron::status;
+use iron::status::{self, Status};
 
 pub struct Reservation;
 
@@ -10,7 +9,7 @@ impl Reservation
     {
         Reservation
     }
-    pub fn call(&self, model: &str, req: &mut Request) -> (Status, String)
+    pub fn call(&self, model: &str, req: &mut Request) -> (status::Status, String)
     {
         let timetable = Timetable::new();
         let reservation = ReservationDisplay::new();
@@ -27,7 +26,7 @@ impl Reservation
             },
             _ =>
             {
-                (Status(status::NotFound), "".to_string())
+                (status::NotFound, "".to_string())
             },
         }
     }
@@ -43,10 +42,10 @@ impl Timetable
         Timetable
     }
 
-    pub fn call(&self, req: &mut Request) -> (Status, String)
+    pub fn call(&self, req: &mut Request) -> (status::Status, String)
     {
         let body = "{'Raum137':[{'Moosbauer':[1,2,3],'Buergis':[5]},{'Krueger':[2,3],'Moosbauer':[1,5],'Noerpel':[6]},{'Buergis':[1,2,5,6],'Moosbauer':[4]},{'Krueger':[2,3],'Noerpel':[5]},{'Noerpel':[5,6],'Moosbauer':[4],'Krueger':[1,2]}],'Raum116':[{'Moosbauer':[1,2,3],'Buergis':[5]},{'Krueger':[2,3],'Moosbauer':[1,5],'Noerpel':[6]},{'Buergis':[1,2,5,6],'Moosbauer':[4]},{'Krueger':[2,3],'Noerpel':[5]},{'Noerpel':[5,6],'Moosbauer':[4],'Krueger':[1,2]}]}";
-        (Status(status::Ok), body.to_string())
+        (status::Ok, body.to_string())
     }
 }
 
@@ -59,9 +58,9 @@ impl ReservationDisplay
         ReservationDisplay
     }
 
-    pub fn call(&self, req: &mut Request) -> (Status, String)
+    pub fn call(&self, req: &mut Request) -> (status::Status, String)
     {
         let body = "{'Donnerstag,25.9.2014':{'Raum137':{'Krueger':[4,5,6],'Moosbauer':[1,2,3]}}}";
-        (Status(status::Ok), body.to_string())
+        (status::Ok, body.to_string())
     }
 }
