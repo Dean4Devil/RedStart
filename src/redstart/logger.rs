@@ -1,11 +1,11 @@
-use std::io::File;
+use std::old_io::File;
 use iron::prelude::*;
 use iron::AfterMiddleware;
 
 /// The logger struct
 pub struct Logger
 {
-        path: Path,
+    path: Path,
 }
 
 impl Logger
@@ -16,15 +16,15 @@ impl Logger
         Logger { path: path }
     }
     
-    fn log(&self, req: &Request, res:&Response)
+    fn log(&self, req: &Request, res: &Response)
     { }
 }
 
 impl AfterMiddleware for Logger
 {
-    fn after(&self, req: &mut Request, res: &mut Response) -> IronResult<()>
+    fn after(&self, req: &mut Request, res: Response) -> IronResult<Response>
     {
-        self.log(req, res);
-        Ok(())
+        self.log(req, &res);
+        Ok(res)
     }
 }

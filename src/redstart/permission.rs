@@ -1,5 +1,8 @@
 use iron::prelude::*;
-use iron::{BeforeMiddleware, Error};
+use iron::BeforeMiddleware;
+
+use std::error::Error;
+use std::fmt::{self, Debug};
 
 pub struct PermCheck;
 
@@ -11,17 +14,29 @@ impl BeforeMiddleware for PermCheck
     }
 }
 
-#[deriving(Show)]
+#[derive(Debug)]
 pub struct InsufficientPermissions;
-#[deriving(Show)]
+#[derive(Debug)]
 pub struct NotLoggedIn;
 
 impl Error for InsufficientPermissions
 {
-    fn name(&self) -> &'static str { "InsufficientPermissions" }
+    fn description(&self) -> &'static str { "InsufficientPermissions" }
+}
+
+impl fmt::Display for InsufficientPermissions {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        Debug::fmt(self, f)
+    }
 }
 
 impl Error for NotLoggedIn
 {
-    fn name(&self) -> &'static str { "NotLoggedIn" }
+    fn description(&self) -> &'static str { "NotLoggedIn" }
+}
+
+impl fmt::Display for NotLoggedIn {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        Debug::fmt(self, f)
+    }
 }

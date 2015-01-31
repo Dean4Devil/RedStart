@@ -1,3 +1,5 @@
+#![feature(core)]
+
 extern crate iron;
 extern crate url;
 extern crate queryst;
@@ -5,8 +7,6 @@ extern crate serialize;
 extern crate toml;
 
 use iron::prelude::*;
-
-use iron::ChainBuilder;
 
 use controller::Reservation;
 
@@ -24,15 +24,15 @@ mod redstart;
 
 fn setup()
 {
-  let mut config_reader = ConfigReader::new();
-  let value = config_reader.get_string("General.name").unwrap();
-  println!("{}: Config Loaded", value);
+  //let mut config_reader = ConfigReader::new();
+  //let value = config_reader.get_string("General.name").unwrap();
+  //println!("{}: Config Loaded", value);
 }
 
 fn main()
 {
     setup();
-    let mut chain = ChainBuilder::new(RedStart);
+    let mut chain = Chain::new(RedStart);
     chain.link_before(URLParser);
     chain.link_before(PermCheck);
     let mut logger = Logger::new("log.txt");

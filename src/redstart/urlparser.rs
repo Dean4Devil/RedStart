@@ -1,94 +1,63 @@
 use iron::prelude::*;
-use iron::{BeforeMiddleware, Error};
+use iron::{BeforeMiddleware, status};
 use iron::typemap::Key;
+
+use std::error::Error;
+use std::fmt::{self, Debug};
 
 use queryst;
 use serialize::json;
 
 // Errors for the win!
-#[deriving(Show)]
-pub struct MalformedRequest;
-#[deriving(Show)]
-pub struct NotFound;
+#[derive(Debug)]
+pub struct MalformedRequest(String);
+#[derive(Debug)]
+pub struct NotFound(String);
 
 impl Error for MalformedRequest
 {
-    fn name(&self) -> &'static str { "MalformedRequest" }
+    fn description(&self) -> &'static str { "MalformedRequest" }
+}
+
+impl fmt::Display for MalformedRequest {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        Debug::fmt(self, f)
+    }
 }
 
 impl Error for NotFound
 {
-    fn name(&self) -> &'static str { "NoRoute" }
+    fn description(&self) -> &'static str { "NoRoute" }
 }
 
-// The actual URLParser struct
+impl fmt::Display for NotFound {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        Debug::fmt(self, f)
+    }
+}
+
+pub struct URL;
+
+impl Key for URL { type Value = [&'static str; 2]; }
+
 pub struct URLParser;
-
-impl Assoc<&'static [&'static str]> for URLParser
-{
-
-}
 
 // Make URLParser a BeforeMiddleware
 impl BeforeMiddleware for URLParser
 {
     fn before(&self, req: &mut Request) -> IronResult<()>
     {
-        if(check_url(req).is_ok())
-        {
-        	Ok(())
-        }
-        else
-        {
-        	Err(Box::new(MalformedRequest) as IronError)
-        }
+        /*
+        URL Structure:
+            * No path defined
+            * query string contains an r variable
+            * r value consits of two subvalues seperated by a slash
+         */
+
+        // TODO: Figure out Lifetimes.
+        let req_url: [&'static str; 2] = ["reservation", "timetable"];
+        req.extensions.insert::<URL>(req_url);
+
+        Ok(())
     }
-}
-
-fn check_url(req: &mut Request) -> Result<(), ()>
-{
-    let url2 = req.url.clone();
-    if url2.path == vec!["".to_string()]
-    {
-        // query type String
-        let mut query = match url2.query
-        {
-            Some(e) => e,
-            None => return Err(()),
-        };
-
-        // qs type &str
-        let qs = query.as_slice();
-
-        // query_json type Json
-        let mut query_json = match queryst::parse(qs)
-        {
-            Ok(e) => e.clone(),
-            Err(_) => return Err(()),
-        };
-
-        // ... does not live long enough ...
-        let mut route_json = match query_json.find("r")
-        {
-            Some(e) => e.clone(),
-            None => return Err(()),
-        };
-
-        let mut route_string = match route_json.as_string()
-        {
-            Some(e) => e,
-            None => return Err(()),
-        };
-
-        if route_string.contains("/")
-        {
-            let mut route_it = route_string.split('/');
-            let mut route_vec = vec![route_it.next().unwrap().clone(), route_it.next().unwrap().clone()];
-            req.extensions.insert::<URLParser, &[&str]>(route_vec.as_slice().clone());
-            return Ok(())
-        }
-    }
-
-    Err(())
-
 }
