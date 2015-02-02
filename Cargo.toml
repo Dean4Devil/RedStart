@@ -10,3 +10,6 @@ toml = "~0.1.3"
 url = "*"
 hyper = "*"
 iron = "*"
+
+[dependencies.ggnet]
+path = "lib/libggnet"
