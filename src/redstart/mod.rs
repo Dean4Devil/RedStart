@@ -22,16 +22,15 @@ impl Handler for RedStart
 {
     fn handle(&self, req: &mut Request) -> IronResult<Response>
     {
-        // Define some arbitrary variables. ToDo: These should be set by URLParser later on
-        let controller: &str;
-        let model: &str;
-        println!("3");
+        let controller_string: String;
+        let model_string: String;
         {
-            let req_ext: &[&str] = req.extensions.get::<URL>().unwrap(); // If this panics, URLParser has a bug! :D
-            // Guess what!
-            controller = req_ext[0].clone();
-            model = req_ext[1].clone();
+            let ext_ref: &mut [String] = req.extensions.get_mut::<URL>().unwrap(); // If this panics, URLParser has a bug! :D
+            controller_string = ext_ref[0].clone();
+            model_string = ext_ref[1].clone();
         }
+        let controller: &str = controller_string.as_slice();
+        let model: &str = model_string.as_slice();
 
         let status: Status;
         let body: Box<Reader + Send>;
@@ -46,7 +45,6 @@ impl Handler for RedStart
                 (status::NotFound, "".to_string())
             },
         };
-        println!("4");
         Ok(Response::new().set(status).set(body))
     }
 }
