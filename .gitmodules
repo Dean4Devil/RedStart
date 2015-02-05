@@ -1,3 +1,0 @@
-[submodule "lib/libggnet"]
-	path = lib/libggnet
-	url = https://gitlab.paranoidlabs.org/dean4devil/libggnet.git

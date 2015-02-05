@@ -54,11 +54,9 @@ impl BeforeMiddleware for URLParser
             * r value consits of two subvalues seperated by a slash
          */
 
-        let url_clone = req.url.clone(); // Borrow the request's URL for now
+        let path: Vec<String> = req.url.path.clone();
 
-        // assert_eq!(url_clone.path, vec!["aaaa", "bbbb", ""]
-
-        let path: Vec<String> = url_clone.path.clone();
+        // Todo: Check for sane request and throw a 400 if it is not.
 
         let controller: String = path[0].clone();
         let model: String = path[1].clone();

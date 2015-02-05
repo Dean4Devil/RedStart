@@ -1,12 +1,15 @@
 #![feature(core)]
 
 extern crate iron;
+extern crate hyper;
 extern crate url;
 extern crate queryst;
 extern crate serialize;
 extern crate toml;
+extern crate cookie;
 
 use iron::prelude::*;
+use iron::AroundMiddleware;
 
 use controller::Reservation;
 
@@ -14,7 +17,8 @@ use redstart::ConfigReader;
 use redstart::URLParser;
 use redstart::PermCheck;
 use redstart::Logger;
-use redstart::RedStart;
+use redstart::{RedStart, RedStartCatch};
+use redstart::AuthMiddleware;
 
 mod controller;
 
@@ -32,9 +36,10 @@ fn setup()
 fn main()
 {
     setup();
-    let mut chain = Chain::new(RedStart);
+    let mut chain = Chain::new(AuthMiddleware::new().around(Box::new(RedStart)));
     chain.link_before(URLParser);
-    chain.link_before(PermCheck);
+    //chain.link_before(PermCheck);
+    chain.link_after(RedStartCatch);
     let mut logger = Logger::new("log.txt");
     chain.link_after(logger);
 

@@ -1,20 +1,16 @@
-CC=gcc
-CFLAGS=-Wall
-LIBS=-lldap -lsasl2
+CC=rustc
+OUT_DIR=./build
 
-all: clean build test
+CrateName=RedStart
+
+
+all: build
 
 prelude:
-	mkdir target
+	mkdir -p build
 
 build: prelude
-	$(CC) -c $(CFLAGS) -ggdb -fPIC src/ggnet.c -o target/ggnet.o $(LIBS)
-	$(CC) -shared -ggdb -o target/libggnet.so target/ggnet.o $(LIBS)
-
-test: 
-	$(CC) -L./target $(CFLAGS) -ggdb -o target/test src/main.c -lggnet
-	LD_LIBRARY_PATH=./target target/test
-
+	${CC} --crate-name ${CrateName} --crate-type bin -g --out-dir ${OUT_DIR} -L ./lib src/main.rs
 
 clean:
-	rm -rf target/
+	rm -rf build/*

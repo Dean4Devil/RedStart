@@ -2,6 +2,9 @@ use iron::prelude::*;
 use iron::{Handler, AfterMiddleware};
 use iron::status::{self, Status};
 
+use hyper::header::ContentType;
+use hyper::mime;
+
 use controller::Reservation;
 
 // Re-export Logger and Router so you can use redstart::Router instead of redstart::router::Router.
@@ -9,11 +12,13 @@ pub use self::logger::Logger;
 pub use self::urlparser::{URLParser, URL};
 pub use self::permission::PermCheck;
 pub use self::configreader::ConfigReader;
+pub use self::authentication::AuthMiddleware;
 
 mod logger;
 mod urlparser;
 mod permission;
 mod configreader;
+mod authentication;
 // End Re-export
 
 pub struct RedStart;
@@ -45,7 +50,11 @@ impl Handler for RedStart
                 (status::NotFound, "".to_string())
             },
         };
-        Ok(Response::new().set(status).set(body))
+
+        let mime: mime::Mime = "application/json".parse().unwrap();
+        let mut res = Response::new();
+        res.headers.set(ContentType(mime));
+        Ok(res.set(status).set(body))
     }
 }
 
