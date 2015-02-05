@@ -3,7 +3,9 @@
 
 use iron::prelude::*;
 use iron::{Handler, AroundMiddleware};
+use hyper::header::SetCookie;
 
+use cookie::Cookie;
 
 pub struct AuthHandler<H> { handler: H, }
 pub struct AuthMiddleware;
@@ -12,7 +14,10 @@ impl<H: Handler> Handler for AuthHandler<H>
 {
 	fn handle(&self, req: &mut Request) -> IronResult<Response>
 	{
-		self.handler.handle(req)
+		let mut res = self.handler.handle(req).unwrap();
+        let mut cookie = Cookie::new("test".to_string(), "succeed".to_string());
+        res.headers.set(SetCookie(vec![cookie]));
+        return Ok(res);
 	}
 }
 

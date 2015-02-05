@@ -9,9 +9,7 @@ toml = "~0.1.3"
 url = "*"
 hyper = "*"
 iron = "*"
-
-[dependencies.cookie]
-git = "https://github.com/alexcrichton/cookie-rs"
+cookie = "*"
 
 [dependencies.ggnet]
 path = "lib/libggnet"
