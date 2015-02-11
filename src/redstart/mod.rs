@@ -74,6 +74,8 @@ impl AfterMiddleware for RedStartCatch
         {
             "NotLoggedIn" => { Ok(Response::new().set(status::Unauthorized)) },
             "InsufficientPermissions" => { Ok(Response::new().set(status::Forbidden)) },
+            "AuthError" => { Ok(Response::new().set(status::Unauthorized)) },
+            "AuthTimeout" => { Ok(Response::new().set(status::AuthenticationTimeout)) },
             "NoRoute" => { Ok(Response::new().set(status::NotFound)) },
             "MalformedRequest" => { Ok(Response::new().set(status::BadRequest)) },
             _ => { Ok(Response::new().set(status::InternalServerError)) },
