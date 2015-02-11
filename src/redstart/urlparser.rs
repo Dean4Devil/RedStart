@@ -56,7 +56,7 @@ impl BeforeMiddleware for URLParser
 
         let path: Vec<String> = req.url.path.clone();
 
-        // Todo: Check for sane request and throw a 400 if it is not.
+        // TODO Check for sane request and throw a 400 if it is not.
 
         let controller: String = path[0].clone();
         let model: String = path[1].clone();

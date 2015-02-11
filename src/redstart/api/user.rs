@@ -3,10 +3,14 @@
 
 // Todo: Change this API to implement proper RBAC.
 
+use iron::typemap::Key;
+
 pub struct User
 {
 	username: &str,
 }
+
+impl Key for User { type Value = String; }
 
 impl User
 {
