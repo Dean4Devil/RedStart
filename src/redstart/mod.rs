@@ -7,15 +7,20 @@ use hyper::mime;
 
 use controller::Reservation;
 
+use self::authentication::Authentication::User;
+
 // Re-export Logger and Router so you can use redstart::Router instead of redstart::router::Router.
 pub use self::logger::Logger;
 pub use self::urlparser::{URLParser, URL};
+pub use self::cookieparser::CookieParser;
 pub use self::permission::PermCheck;
 pub use self::configreader::ConfigReader;
-pub use self::authentication::AuthMiddleware;
+pub use self::authentication::Authentication as Auth;
+//pub use self::authentication::Authentication::API as AuthAPI;
 
 mod logger;
 mod urlparser;
+mod cookieparser;
 mod permission;
 mod configreader;
 mod authentication;
@@ -30,12 +35,24 @@ impl Handler for RedStart
         let controller_string: String;
         let model_string: String;
         {
-            let ext_ref: &mut [String] = req.extensions.get_mut::<URL>().unwrap(); // If this panics, URLParser has a bug! :D
-            controller_string = ext_ref[0].clone();
-            model_string = ext_ref[1].clone();
+            let ext_url: &mut [String] = req.extensions.get_mut::<URL>().unwrap(); // If this panics, URLParser has a bug! :D
+            controller_string = ext_url[0].clone();
+            model_string = ext_url[1].clone();
         }
         let controller: &str = controller_string.as_slice();
         let model: &str = model_string.as_slice();
+
+        let username: Option<String>;
+        if req.extensions.contains::<User>()
+        {
+            let ext_usr: &mut String = req.extensions.get_mut::<User>().unwrap();
+            username = Some(ext_usr.clone());
+            println!("User is logged in!");
+        }
+        else
+        {
+            username = None;
+        }
 
         let status: Status;
         let body: Box<Reader + Send>;
@@ -75,7 +92,7 @@ impl AfterMiddleware for RedStartCatch
             "NotLoggedIn" => { Ok(Response::new().set(status::Unauthorized)) },
             "InsufficientPermissions" => { Ok(Response::new().set(status::Forbidden)) },
             "AuthError" => { Ok(Response::new().set(status::Unauthorized)) },
-            "AuthTimeout" => { Ok(Response::new().set(status::AuthenticationTimeout)) },
+            //"AuthTimeout" => { Ok(Response::new().set(status::AuthenticationTimeout)) },
             "NoRoute" => { Ok(Response::new().set(status::NotFound)) },
             "MalformedRequest" => { Ok(Response::new().set(status::BadRequest)) },
             _ => { Ok(Response::new().set(status::InternalServerError)) },

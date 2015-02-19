@@ -4,6 +4,7 @@ version = "0.0.1"
 authors = ["Dean4Devil <dean4devil@chaingamers.com>"]
 
 [dependencies]
+rustc-serialize = "=0.2.13"
 queryst = "0.1.1"
 toml = "~0.1.3"
 url = "*"

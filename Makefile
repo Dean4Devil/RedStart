@@ -1,16 +1,30 @@
-CC=rustc
-OUT_DIR=./build
+RC = rustc
+OUT_DIR = ./build
+LIB_DIR = ./lib
 
-CrateName=RedStart
+DEBUG_OPT = -g
+RELEASE_OPT = -O
 
+CrateName = RedStart
+CrateType = bin
 
-all: build
+all: debug
 
 prelude:
-	mkdir -p build
+	mkdir -p ${OUT_DIR}
 
-build: prelude
-	${CC} --crate-name ${CrateName} --crate-type bin -g --out-dir ${OUT_DIR} -L ./lib src/main.rs
+# Build all libraries
+build_libs:
+	${MAKE} -C ${LIB_DIR} build
+
+# Build a release candidate
+release: build_libs
+	${RC} --crate-name ${CrateName} --crate-type ${CrateType} ${RELEASE_OPT} --out-dir ${OUT_DIR}/release/ -L ${LIB_DIR} src/main.rs
+
+# Build a debug candidate
+debug: build_libs
+	${RC} --crate-name ${CrateName} --crate-type ${CrateType} ${DEBUG_OPT} --out-dir ${OUT_DIR}/debug/ -L ${LIB_DIR} src/main.rs
 
 clean:
-	rm -rf build/*
+	${MAKE} -C ${LIB_DIR} clean
+	rm -rf ${OUT_DIR}/*
