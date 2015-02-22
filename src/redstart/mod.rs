@@ -1,5 +1,5 @@
 use iron::prelude::*;
-use iron::{Handler, AfterMiddleware};
+use iron::Handler;
 use iron::status::{self, Status};
 
 use hyper::header::ContentType;
@@ -11,7 +11,6 @@ use controller::Reservation;
 pub use self::logger::Logger;
 pub use self::urlparser::{URLParser, URL};
 pub use self::cookieparser::CookieParser;
-pub use self::permission::PermCheck;
 pub use self::configreader::ConfigReader;
 pub use self::authentication::Authentication as Auth;
 pub use self::session::Session;
@@ -28,6 +27,7 @@ mod session;
 
 pub struct RedStart;
 
+#[allow(unused_variables)]
 impl Handler for RedStart
 {
     fn handle(&self, req: &mut Request) -> IronResult<Response>
@@ -47,18 +47,16 @@ impl Handler for RedStart
         {
             let ext_session: &mut String = req.extensions.get_mut::<Session>().unwrap();
             session_key = Some(ext_session.clone());
-            println!("User is logged in!");
         }
         else
         {
             session_key = None;
         }
 
-        let status: Status;
-        let body: Box<Reader + Send>;
-
         let reservation = Reservation::new();
 
+        let status: Status;
+        let body: Box<Reader + Send>;
         let (status, body) = match controller
         {
             "reservation" => { reservation.call(model, req) },
@@ -75,27 +73,3 @@ impl Handler for RedStart
     }
 }
 
-pub struct RedStartCatch;
-
-impl AfterMiddleware for RedStartCatch
-{
-    fn after(&self, _: &mut Request, res: Response) -> IronResult<Response>
-    {
-        Ok(res)
-    }
-
-    fn catch(&self, _: &mut Request, err: IronError) -> IronResult<Response>
-    {
-        // Its definetely *not* pretty. But it works.
-        match err.error.description()
-        {
-            "NotLoggedIn" => { Ok(Response::new().set(status::Unauthorized)) },
-            "InsufficientPermissions" => { Ok(Response::new().set(status::Forbidden)) },
-            "AuthError" => { Ok(Response::new().set(status::Unauthorized)) },
-            //"AuthTimeout" => { Ok(Response::new().set(status::AuthenticationTimeout)) },
-            "NoRoute" => { Ok(Response::new().set(status::NotFound)) },
-            "MalformedRequest" => { Ok(Response::new().set(status::BadRequest)) },
-            _ => { Ok(Response::new().set(status::InternalServerError)) },
-        }
-    }
-}

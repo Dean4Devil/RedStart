@@ -1,19 +1,5 @@
-use iron::prelude::*;
-use iron::BeforeMiddleware;
-
 use std::error::Error;
 use std::fmt::{self, Debug};
-
-pub struct PermCheck;
-
-impl BeforeMiddleware for PermCheck
-{
-    fn before(&self, req: &mut Request) -> IronResult<()>
-    {
-        // Todo: Move this Middleware's functionality into the Handler.
-        Ok(())
-    }
-}
 
 #[derive(Debug)]
 pub struct InsufficientPermissions;

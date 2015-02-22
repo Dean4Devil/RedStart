@@ -1,24 +1,29 @@
+#![allow(unstable_features)]
+#![allow(non_snake_case)]
+// Since both ConfigReader and Logger are not functional yet allow dead code.
+#![allow(dead_code)]
+#![feature(core,old_io,old_path)]
 extern crate iron;
 extern crate hyper;
 extern crate url;
-extern crate queryst;
-extern crate serialize;
+extern crate "rustc-serialize" as serialize;
 extern crate toml;
 extern crate cookie;
 
-use std::error::Error;
+//use std::error::Error;
 
 use iron::prelude::*;
-use iron::AroundMiddleware;
+//use iron::AroundMiddleware;
 
-use controller::Reservation;
+//use controller::Reservation;
 
-use redstart::ConfigReader;
+//use redstart::ConfigReader;
 use redstart::URLParser;
 use redstart::CookieParser;
-use redstart::PermCheck;
-use redstart::Logger;
-use redstart::{RedStart, RedStartCatch};
+//use redstart::CookieSetter;
+//use redstart::PermCheck;
+//use redstart::Logger;
+use redstart::RedStart;
 
 mod controller;
 
@@ -26,24 +31,16 @@ mod model;
 
 mod redstart;
 
-fn setup()
+fn setup() -> iron::Chain
 {
-  //let mut config_reader = ConfigReader::new();
-  //let value = config_reader.get_string("General.name").unwrap();
-  //println!("{}: Config Loaded", value);
+	let mut chain = Chain::new(RedStart);
+	chain.link_before(URLParser);
+	chain.link_before(CookieParser);
+	return chain;
 }
 
 fn main()
 {
-    setup();
-    let mut chain = Chain::new(RedStart);
-    chain.link_before(URLParser);
-    chain.link_before(CookieParser);
-    //chain.link_before(PermCheck);
-    chain.link_after(RedStartCatch);
-    let mut logger = Logger::new("log.txt");
-    chain.link_after(logger);
-
-    Iron::new(chain).http("localhost:3000").unwrap();
-    println!("On 3000");
+	let chain: iron::Chain = setup();
+	Iron::new(chain).http("localhost:3000").unwrap();
 }
