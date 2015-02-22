@@ -18,11 +18,13 @@ build_libs:
 	${MAKE} -C ${LIB_DIR} build
 
 # Build a release candidate
-release: build_libs
+release:
+	mkdir -p ${OUT_DIR}/release/
 	${RC} --crate-name ${CrateName} --crate-type ${CrateType} ${RELEASE_OPT} --out-dir ${OUT_DIR}/release/ -L ${LIB_DIR} src/main.rs
 
 # Build a debug candidate
-debug: build_libs
+debug:
+	mkdir -p ${OUT_DIR}/debug/
 	${RC} --crate-name ${CrateName} --crate-type ${CrateType} ${DEBUG_OPT} --out-dir ${OUT_DIR}/debug/ -L ${LIB_DIR} src/main.rs
 
 clean:
