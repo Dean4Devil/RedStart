@@ -1,4 +1,3 @@
-use std::old_io::File;
 use iron::prelude::*;
 use iron::AfterMiddleware;
 
@@ -16,7 +15,7 @@ impl Logger
         Logger { path: path }
     }
     
-    fn log(&self, req: &Request, res: &Response)
+    fn log(&self, _: &Request, _: &Response)
     { }
 }
 

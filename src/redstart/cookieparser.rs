@@ -1,9 +1,6 @@
 use iron::prelude::*;
 use iron::BeforeMiddleware;
-use iron::typemap::Key;
 use iron::headers::Cookie as CookieHeader;
-
-use cookie::Cookie;
 
 use redstart::Auth;
 use redstart::Session;

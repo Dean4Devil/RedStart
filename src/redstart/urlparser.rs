@@ -1,19 +1,14 @@
 use iron::prelude::*;
-use iron::{BeforeMiddleware, status};
+use iron::BeforeMiddleware;
 use iron::typemap::Key;
+use iron::status;
 
 use std::error::Error;
 use std::fmt::{self, Debug};
 
-use queryst;
-use serialize::json;
-
 // Errors for the win!
 #[derive(Debug)]
-pub struct MalformedRequest(String);
-#[derive(Debug)]
-pub struct NotFound(String);
-
+pub struct MalformedRequest;
 impl Error for MalformedRequest
 {
     fn description(&self) -> &'static str { "MalformedRequest" }
@@ -25,38 +20,28 @@ impl fmt::Display for MalformedRequest {
     }
 }
 
-impl Error for NotFound
-{
-    fn description(&self) -> &'static str { "NoRoute" }
-}
-
-impl fmt::Display for NotFound {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        Debug::fmt(self, f)
-    }
-}
-
 pub struct URL;
-
 impl Key for URL { type Value = [String; 2]; }
 
 pub struct URLParser;
-
-// Make URLParser a BeforeMiddleware
 impl BeforeMiddleware for URLParser
 {
     fn before(&self, req: &mut Request) -> IronResult<()>
     {
-        /*
-        URL Structure:
-            * No path defined
-            * query string contains an r variable
-            * r value consits of two subvalues seperated by a slash
-         */
-
         let path: Vec<String> = req.url.path.clone();
 
-        // TODO Check for sane request and throw a 400 if it is not.
+        if path.len() < 2 || path.len() > 3
+        {
+            return Err(IronError::new(MalformedRequest, status::BadRequest));
+        }
+        if path[0] == "" || path[1] == ""
+        {
+            return Err(IronError::new(MalformedRequest, status::BadRequest));
+        }
+        if path.len() == 3 && path[2] != ""
+        {
+            return Err(IronError::new(MalformedRequest, status::BadRequest));
+        }
 
         let controller: String = path[0].clone();
         let model: String = path[1].clone();
