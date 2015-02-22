@@ -10,6 +10,7 @@ impl BeforeMiddleware for PermCheck
 {
     fn before(&self, req: &mut Request) -> IronResult<()>
     {
+        // Todo: Move this Middleware's functionality into the Handler.
         Ok(())
     }
 }

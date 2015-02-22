@@ -1,20 +1,30 @@
-CC=gcc
-CFLAGS=-Wall
-LIBS=-lldap -lsasl2
+RC = rustc
+OUT_DIR = ./build
+LIB_DIR = ./lib
 
-all: clean build test
+DEBUG_OPT = -g
+RELEASE_OPT = -O
+
+CrateName = RedStart
+CrateType = bin
+
+all: debug
 
 prelude:
-	mkdir target
+	mkdir -p ${OUT_DIR}
 
-build: prelude
-	$(CC) -c $(CFLAGS) -ggdb -fPIC src/ggnet.c -o target/ggnet.o $(LIBS)
-	$(CC) -shared -ggdb -o target/libggnet.so target/ggnet.o $(LIBS)
+# Build all libraries
+build_libs:
+	${MAKE} -C ${LIB_DIR} build
 
-test: 
-	$(CC) -L./target $(CFLAGS) -ggdb -o target/test src/main.c -lggnet
-	LD_LIBRARY_PATH=./target target/test
+# Build a release candidate
+release: build_libs
+	${RC} --crate-name ${CrateName} --crate-type ${CrateType} ${RELEASE_OPT} --out-dir ${OUT_DIR}/release/ -L ${LIB_DIR} src/main.rs
 
+# Build a debug candidate
+debug: build_libs
+	${RC} --crate-name ${CrateName} --crate-type ${CrateType} ${DEBUG_OPT} --out-dir ${OUT_DIR}/debug/ -L ${LIB_DIR} src/main.rs
 
 clean:
-	rm -rf target/
+	${MAKE} -C ${LIB_DIR} clean
+	rm -rf ${OUT_DIR}/*
