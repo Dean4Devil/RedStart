@@ -11,6 +11,8 @@ pub mod Authentication
 	use iron::status::{Status, self};
 
 	use cookie::Cookie;
+    
+    use redstart::Session;
 
 	use std::error::Error;
 	use std::fmt::{self, Debug};
@@ -46,12 +48,7 @@ pub mod Authentication
 		}
 	}
 
-	pub struct User
-	{
-		pub name: String,
-	}
-
-	pub fn parse_from_token(token: &str) -> IronResult<User>
+	pub fn parse_from_token(token: &str) -> IronResult<Session>
 	{
 		// TODO Remove Placeholders
 		match token
@@ -59,18 +56,18 @@ pub mod Authentication
 			// Placeholder correct token
 			"UUXzTqbFRdzbr79" =>
 			{
-				return Ok(User { name: "testuser".to_string() })
+				return Ok(Session{ key: "testkey".to_string() })
 			},
 			// Placeholder outdated token
 			"ixxKo5obDmees6o" =>
 			{
 				// TODO This should return a specific error.
-				return Err(IronError::new(AuthTimeout, status::Forbidden));
+				return Err(IronError::new(AuthTimeout, status::Unauthorized));
 			}
             // Placeholder invalid token
 			_ =>
 			{
-				return Err(IronError::new(AuthError, status::Forbidden));
+				return Err(IronError::new(AuthError, status::Unauthorized));
 			}
 		}
 	}

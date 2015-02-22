@@ -7,8 +7,6 @@ use hyper::mime;
 
 use controller::Reservation;
 
-use self::authentication::Authentication::User;
-
 // Re-export Logger and Router so you can use redstart::Router instead of redstart::router::Router.
 pub use self::logger::Logger;
 pub use self::urlparser::{URLParser, URL};
@@ -16,6 +14,7 @@ pub use self::cookieparser::CookieParser;
 pub use self::permission::PermCheck;
 pub use self::configreader::ConfigReader;
 pub use self::authentication::Authentication as Auth;
+pub use self::session::Session;
 //pub use self::authentication::Authentication::API as AuthAPI;
 
 mod logger;
@@ -24,6 +23,7 @@ mod cookieparser;
 mod permission;
 mod configreader;
 mod authentication;
+mod session;
 // End Re-export
 
 pub struct RedStart;
@@ -42,16 +42,16 @@ impl Handler for RedStart
         let controller: &str = controller_string.as_slice();
         let model: &str = model_string.as_slice();
 
-        let username: Option<String>;
-        if req.extensions.contains::<User>()
+        let session_key: Option<String>;
+        if req.extensions.contains::<Session>()
         {
-            let ext_usr: &mut String = req.extensions.get_mut::<User>().unwrap();
-            username = Some(ext_usr.clone());
+            let ext_session: &mut String = req.extensions.get_mut::<Session>().unwrap();
+            session_key = Some(ext_session.clone());
             println!("User is logged in!");
         }
         else
         {
-            username = None;
+            session_key = None;
         }
 
         let status: Status;

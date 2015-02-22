@@ -1,5 +1,3 @@
-#![feature(core)]
-
 extern crate iron;
 extern crate hyper;
 extern crate url;
@@ -46,6 +44,6 @@ fn main()
     let mut logger = Logger::new("log.txt");
     chain.link_after(logger);
 
-    Iron::new(chain).listen("localhost:3000").unwrap();
+    Iron::new(chain).http("localhost:3000").unwrap();
     println!("On 3000");
 }

@@ -8,5 +8,5 @@ Cargo.lock
 # Ignore vim swap files
 *.swp
 
-# Ignore the library folder for now
-/lib
+# Ignore the build directory
+/build
