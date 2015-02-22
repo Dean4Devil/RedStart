@@ -38,7 +38,7 @@ impl fmt::Display for NotFound {
 
 pub struct URL;
 
-impl Key for URL { type Value = [&'static str; 2]; }
+impl Key for URL { type Value = [String; 2]; }
 
 pub struct URLParser;
 
@@ -54,8 +54,14 @@ impl BeforeMiddleware for URLParser
             * r value consits of two subvalues seperated by a slash
          */
 
-        // TODO: Figure out Lifetimes.
-        let req_url: [&'static str; 2] = ["reservation", "timetable"];
+        let path: Vec<String> = req.url.path.clone();
+
+        // TODO Check for sane request and throw a 400 if it is not.
+
+        let controller: String = path[0].clone();
+        let model: String = path[1].clone();
+
+        let req_url: [String; 2] = [controller, model];
         req.extensions.insert::<URL>(req_url);
 
         Ok(())

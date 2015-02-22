@@ -2,18 +2,28 @@ use iron::prelude::*;
 use iron::{Handler, AfterMiddleware};
 use iron::status::{self, Status};
 
+use hyper::header::ContentType;
+use hyper::mime;
+
 use controller::Reservation;
 
 // Re-export Logger and Router so you can use redstart::Router instead of redstart::router::Router.
 pub use self::logger::Logger;
 pub use self::urlparser::{URLParser, URL};
+pub use self::cookieparser::CookieParser;
 pub use self::permission::PermCheck;
 pub use self::configreader::ConfigReader;
+pub use self::authentication::Authentication as Auth;
+pub use self::session::Session;
+//pub use self::authentication::Authentication::API as AuthAPI;
 
 mod logger;
 mod urlparser;
+mod cookieparser;
 mod permission;
 mod configreader;
+mod authentication;
+mod session;
 // End Re-export
 
 pub struct RedStart;
@@ -22,15 +32,26 @@ impl Handler for RedStart
 {
     fn handle(&self, req: &mut Request) -> IronResult<Response>
     {
-        // Define some arbitrary variables. ToDo: These should be set by URLParser later on
-        let controller: &str;
-        let model: &str;
-        println!("3");
+        let controller_string: String;
+        let model_string: String;
         {
-            let req_ext: &[&str] = req.extensions.get::<URL>().unwrap(); // If this panics, URLParser has a bug! :D
-            // Guess what!
-            controller = req_ext[0].clone();
-            model = req_ext[1].clone();
+            let ext_url: &mut [String] = req.extensions.get_mut::<URL>().unwrap(); // If this panics, URLParser has a bug! :D
+            controller_string = ext_url[0].clone();
+            model_string = ext_url[1].clone();
+        }
+        let controller: &str = controller_string.as_slice();
+        let model: &str = model_string.as_slice();
+
+        let session_key: Option<String>;
+        if req.extensions.contains::<Session>()
+        {
+            let ext_session: &mut String = req.extensions.get_mut::<Session>().unwrap();
+            session_key = Some(ext_session.clone());
+            println!("User is logged in!");
+        }
+        else
+        {
+            session_key = None;
         }
 
         let status: Status;
@@ -46,8 +67,11 @@ impl Handler for RedStart
                 (status::NotFound, "".to_string())
             },
         };
-        println!("4");
-        Ok(Response::new().set(status).set(body))
+
+        let mime: mime::Mime = "application/json".parse().unwrap();
+        let mut res = Response::new();
+        res.headers.set(ContentType(mime));
+        Ok(res.set(status).set(body))
     }
 }
 
@@ -67,6 +91,8 @@ impl AfterMiddleware for RedStartCatch
         {
             "NotLoggedIn" => { Ok(Response::new().set(status::Unauthorized)) },
             "InsufficientPermissions" => { Ok(Response::new().set(status::Forbidden)) },
+            "AuthError" => { Ok(Response::new().set(status::Unauthorized)) },
+            //"AuthTimeout" => { Ok(Response::new().set(status::AuthenticationTimeout)) },
             "NoRoute" => { Ok(Response::new().set(status::NotFound)) },
             "MalformedRequest" => { Ok(Response::new().set(status::BadRequest)) },
             _ => { Ok(Response::new().set(status::InternalServerError)) },

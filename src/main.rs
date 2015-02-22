@@ -1,20 +1,24 @@
-#![feature(core)]
-
 extern crate iron;
+extern crate hyper;
 extern crate url;
 extern crate queryst;
 extern crate serialize;
 extern crate toml;
+extern crate cookie;
+
+use std::error::Error;
 
 use iron::prelude::*;
+use iron::AroundMiddleware;
 
 use controller::Reservation;
 
 use redstart::ConfigReader;
 use redstart::URLParser;
+use redstart::CookieParser;
 use redstart::PermCheck;
 use redstart::Logger;
-use redstart::RedStart;
+use redstart::{RedStart, RedStartCatch};
 
 mod controller;
 
@@ -34,10 +38,12 @@ fn main()
     setup();
     let mut chain = Chain::new(RedStart);
     chain.link_before(URLParser);
-    chain.link_before(PermCheck);
+    chain.link_before(CookieParser);
+    //chain.link_before(PermCheck);
+    chain.link_after(RedStartCatch);
     let mut logger = Logger::new("log.txt");
     chain.link_after(logger);
 
-    Iron::new(chain).listen("localhost:3000").unwrap();
+    Iron::new(chain).http("localhost:3000").unwrap();
     println!("On 3000");
 }

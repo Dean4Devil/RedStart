@@ -1,2 +1,12 @@
+# Ignore Cargo files & directory
 /target
 Cargo.lock
+
+# For all dem people using IDEA for Rust development
+/.idea
+
+# Ignore vim swap files
+*.swp
+
+# Ignore the build directory
+/build
