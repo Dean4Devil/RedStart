@@ -8,5 +8,8 @@ Cargo.lock
 # Ignore vim swap files
 *.swp
 
+# Ignore libggnet for now
+/lib/libggnet
+
 # Ignore the build directory
 /build

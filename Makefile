@@ -13,10 +13,6 @@ all: debug
 prelude:
 	mkdir -p ${OUT_DIR}
 
-# Build all libraries
-build_libs:
-	${MAKE} -C ${LIB_DIR} build
-
 # Build a release candidate
 release:
 	mkdir -p ${OUT_DIR}/release/
