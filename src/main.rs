@@ -17,10 +17,7 @@ use iron::prelude::*;
 
 //use controller::Reservation;
 
-//use redstart::ConfigReader;
-use redstart::Store;
-||||||| merged common ancestors
-//use redstart::ConfigReader;
+use configreader::ConfigReader;
 use redstart::URLParser;
 use redstart::CookieParser;
 //use redstart::CookieSetter;
@@ -35,8 +32,7 @@ mod redstart;
 
 fn setup() -> iron::Chain
 {
-    let cookieparser = CookieParser::new(Store::new());
-||||||| merged common ancestors
+    let config = ConfigReader::new();
 	let mut chain = Chain::new(RedStart);
 	chain.link_before(URLParser);
 	chain.link_before(cookieparser);
