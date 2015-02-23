@@ -2,30 +2,20 @@
 
 use iron::typemap::Key;
 
+mod storage;
+
 pub struct Session
 {
 	pub key: String,
 }
-
 impl Key for Session { type Value = String; }
 
-impl Session
+pub struct Store<S: Storage>
 {
-
+    engine: S,
 }
 
-pub mod Store
+trait Storage
 {
-	mod PostgreSQL
-	{
-		// A PostgreSQL store
-	}
-	mod MySQL
-	{
-		// A MySQL store
-	}
-	mod FlatFile
-	{
-		// A flatfile store
-	}
+    fn get_from_key(&self, key: &str) -> Result<Session, ()>;
 }
