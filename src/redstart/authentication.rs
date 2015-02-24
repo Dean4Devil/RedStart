@@ -4,14 +4,9 @@
 
 pub mod Authentication
 {
-	use iron::prelude::*;
-	use iron::{Handler, AroundMiddleware};
-	use iron::headers::SetCookie;
-	use iron::headers::Cookie as CookieHeader;
-	use iron::status::{Status, self};
+    use iron::{IronResult, IronError};
+    use iron::status;
 
-	use cookie::Cookie;
-    
     use redstart::Session;
 
 	use std::error::Error;
