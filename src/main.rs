@@ -21,6 +21,7 @@ use iron::prelude::*;
 use redstart::Store;
 use redstart::URLParser;
 use redstart::CookieParser;
+use redstart::CookieSetter;
 //use redstart::CookieSetter;
 //use redstart::PermCheck;
 //use redstart::Logger;
@@ -37,9 +38,11 @@ fn setup() -> iron::Chain
     let sessionstore = Store::new();
     let redstart = RedStart::new(sessionstore.clone());
     let cookieparser = CookieParser::new(sessionstore.clone());
+    let cookesetter = CookieSetter::new(sessionstore.clone());
 	let mut chain = Chain::new(redstart);
 	chain.link_before(URLParser);
 	chain.link_before(cookieparser);
+    chain.link_after(cookesetter);
 	return chain;
 }
 
