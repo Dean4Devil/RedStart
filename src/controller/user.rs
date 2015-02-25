@@ -60,6 +60,7 @@ impl Login
             println!("{}", session_key);
             let session = Session::new(session_key.clone(), "testuser".to_string());
             self.sessionstore.put(&session_key, session);
+            req.extensions.insert::<Session>(session_key);
             (status::Accepted, "".to_string())
         }
         else
