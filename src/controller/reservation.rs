@@ -34,7 +34,6 @@ impl Reservation
 }
 
 struct Timetable;
-
 impl Timetable
 {
     pub fn new() -> Timetable
@@ -50,7 +49,6 @@ impl Timetable
 }
 
 struct ReservationDisplay;
-
 impl ReservationDisplay
 {
     pub fn new() -> ReservationDisplay

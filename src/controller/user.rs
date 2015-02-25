@@ -1,23 +1,25 @@
 use iron::prelude::*;
-use iron::response::modifiers::Status;
-use iron::status;
+use iron::status::{self, Status};
 
-pub struct User;
+use redstart::Store;
+use redstart::{Session, SessionStore};
 
+pub struct User
+{
+    sessionstore: Store,
+}
 impl User
 {
-	pub fn new() -> User
+	pub fn new(sessionstore: Store) -> User
 	{
-		User
+		User { sessionstore: sessionstore }
 	}
 
-	impl call(&self, model: &str, req: &mut Request) -> (Status, String)
+	pub fn call(&self, model: &str, req: &mut Request) -> (Status, String)
 	{
-		let login = Login::new();
-		let logout = Logout::new();
-		let setline = SetLine::new();
-		let info = Info::new();
-
+        // The Store is a Arc so no problem cloning it.
+        let login = Login::new(self.sessionstore.clone());
+        let logout = Logout::new(self.sessionstore.clone());
 		match model
 		{
 			"login" =>
@@ -28,72 +30,51 @@ impl User
 			{
 				logout.call(req)
 			},
-			"setline" =>
-			{
-				setline.call(req)
-			},
-			"info" =>
-			{
-				info.call(req)
-			},
 			_ =>
 			{
-				(Status(status::NotFound), "".to_string())
+				(status::NotFound, "".to_string())
 			},
 		}
 	}
 }
 
-struct Login;
-
+struct Login
+{
+    sessionstore: Store,
+}
 impl Login
 {
-    pub fn new() -> Login
+    pub fn new(sessionstore: Store) -> Login
     {
-        Login
+        Login { sessionstore: sessionstore }
     }
-
     pub fn call(&self, req: &mut Request) -> (Status, String)
     {
-        (Status(status::NotImplemented), "".to_string())
+        (status::NotImplemented, "".to_string())
     }
 }
 
+struct Logout
+{
+    sessionstore: Store,
+}
 impl Logout
 {
-    pub fn new() -> Logout
+    pub fn new(sessionstore: Store) -> Logout
     {
-        Logout
+        Logout { sessionstore: sessionstore }
     }
-
     pub fn call(&self, req: &mut Request) -> (Status, String)
     {
-        (Status(status::NotImplemented), "".to_string())
-    }
-}
-
-impl SetLine
-{
-    pub fn new() -> SetLine
-    {
-        SetLine
-    }
-
-    pub fn call(&self, req: &mut Request) -> (Status, String)
-    {
-        (Status(status::NotImplemented), "".to_string())
-    }
-}
-
-impl Info
-{
-    pub fn new() -> SetLine
-    {
-        Info
-    }
-
-    pub fn call(&self, req: &mut Request) -> (Status, String)
-    {
-        (Status(status::NotImplemented), "".to_string())
+        if req.extensions.contains::<Session>()
+        {
+            let session_key: String = req.extensions.get_mut::<Session>().unwrap().clone();
+            self.sessionstore.del(&session_key);
+            (status::Ok, "".to_string())
+        }
+        else
+        {
+            (status::Unauthorized, "".to_string())
+        }
     }
 }

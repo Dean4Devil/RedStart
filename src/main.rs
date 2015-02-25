@@ -34,8 +34,10 @@ mod redstart;
 
 fn setup() -> iron::Chain
 {
-    let cookieparser = CookieParser::new(Store::new());
-	let mut chain = Chain::new(RedStart);
+    let sessionstore = Store::new();
+    let redstart = RedStart::new(sessionstore.clone());
+    let cookieparser = CookieParser::new(sessionstore.clone());
+	let mut chain = Chain::new(redstart);
 	chain.link_before(URLParser);
 	chain.link_before(cookieparser);
 	return chain;
