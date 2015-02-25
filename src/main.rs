@@ -18,6 +18,7 @@ use iron::prelude::*;
 //use controller::Reservation;
 
 //use redstart::ConfigReader;
+use redstart::Store;
 use redstart::URLParser;
 use redstart::CookieParser;
 //use redstart::CookieSetter;
@@ -33,9 +34,10 @@ mod redstart;
 
 fn setup() -> iron::Chain
 {
+    let cookieparser = CookieParser::new(Store::new());
 	let mut chain = Chain::new(RedStart);
 	chain.link_before(URLParser);
-	chain.link_before(CookieParser);
+	chain.link_before(cookieparser);
 	return chain;
 }
 

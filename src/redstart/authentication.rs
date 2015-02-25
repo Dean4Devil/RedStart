@@ -51,7 +51,7 @@ pub mod Authentication
 			// Placeholder correct token
 			"UUXzTqbFRdzbr79" =>
 			{
-				return Ok(Session{ key: "testkey".to_string() })
+				return Ok(Session{ key: "testkey".to_string(), username: "testuser".to_string() })
 			},
 			// Placeholder outdated token
 			"ixxKo5obDmees6o" =>

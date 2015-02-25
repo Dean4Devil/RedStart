@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use super::{Session, SessionStore};
 
 // Pure in-memory session storage
-struct Memory
+pub struct Memory
 {
     // The storeage is a read-write locked hashmap
     store: Arc<RwLock<HashMap<String, Session>>>,
@@ -29,10 +29,14 @@ impl SessionStore for Memory
     fn get(&self, key: &String) -> Option<Session>
     {
         // Aquire a read lock for the shared HashMap and clone() the value out
-        match self.store.read().unwrap().get_mut(key)
+        match self.store.read().unwrap().get(key)
         {
             None => return None,
-            Some(&session) => return session.clone(),
+            Some(val_ref) =>
+            {
+                let val: Session = val_ref.clone();
+                return Some(val);
+            }
         }
     }
 

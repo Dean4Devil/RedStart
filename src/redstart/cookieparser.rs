@@ -1,11 +1,24 @@
 use iron::prelude::*;
 use iron::BeforeMiddleware;
+use iron::status;
 use iron::headers::Cookie as CookieHeader;
 
-use redstart::Auth;
+use redstart::Auth::AuthError;
 use redstart::Session;
+use redstart::session::{Store, SessionStore};
 
-pub struct CookieParser;
+pub struct CookieParser
+{
+    sessionstore: Store,
+}
+
+impl CookieParser
+{
+    pub fn new(sessionstore: Store) -> CookieParser
+    {
+        CookieParser { sessionstore: sessionstore }
+    }
+}
 
 impl BeforeMiddleware for CookieParser
 {
@@ -21,18 +34,18 @@ impl BeforeMiddleware for CookieParser
 				{
 					"auth-token" =>
 					{
-						let session_res = Auth::parse_from_token(cookie.value.as_slice());
-						if session_res.is_err()
-						{
-							println!("Auth-Token is not valid!");
-							Err(session_res.err().unwrap())
-						}
-						else
+                        let session = self.sessionstore.get(&cookie.value);
+						if session.is_some()
 						{
 							println!("Auth-Token is valid!");
-							req.extensions.insert::<Session>(session_res.unwrap().key);
+							req.extensions.insert::<Session>(session.unwrap().key);
 							Ok(())
 						}
+                        else
+                        {
+                            println!("Auth-token is set but is not valid!");
+                            return Err(IronError::new(AuthError, status::Unauthorized));
+                        }
 					},
 
 
