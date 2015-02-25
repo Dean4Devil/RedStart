@@ -1,3 +1,5 @@
+use std::rand::{Rng, OsRng};
+
 use iron::prelude::*;
 use iron::status::{self, Status};
 
@@ -50,7 +52,20 @@ impl Login
     }
     pub fn call(&self, req: &mut Request) -> (Status, String)
     {
-        (status::NotImplemented, "".to_string())
+        if req.body.read_to_string().unwrap() == "username=testuser&password=testpass"
+        {
+            // Username + password "valid"
+            let mut rgen = OsRng::new().unwrap();
+            let session_key = rgen.gen_ascii_chars().take(30).collect::<String>();
+            println!("{}", session_key);
+            let session = Session::new(session_key.clone(), "testuser".to_string());
+            self.sessionstore.put(&session_key, session);
+            (status::Accepted, "".to_string())
+        }
+        else
+        {
+            (status::Unauthorized, "".to_string())
+        }
     }
 }
 
