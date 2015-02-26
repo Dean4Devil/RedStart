@@ -35,6 +35,13 @@ impl Store
         Store { engine: storage::Memory::new() }
     }
 }
+impl Clone for Store
+{
+    fn clone(&self) -> Store
+    {
+        Store { engine: self.engine.clone() }
+    }
+}
 impl SessionStore for Store
 {
     fn get(&self, key: &String) -> Option<Session> { self.engine.get(key) }
