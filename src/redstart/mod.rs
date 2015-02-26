@@ -12,7 +12,7 @@ use controller::User;
 pub use self::logger::Logger;
 pub use self::urlparser::{URLParser, URL};
 pub use self::cookieparser::CookieParser;
-pub use self::configreader::ConfigReader;
+pub use self::cookiesetter::CookieSetter;
 pub use self::authentication::Authentication as Auth;
 pub use self::session::{Session, Store, SessionStore};
 //pub use self::authentication::Authentication::API as AuthAPI;
