@@ -23,6 +23,7 @@ use redstart::CookieParser;
 //use redstart::CookieSetter;
 //use redstart::PermCheck;
 //use redstart::Logger;
+use redstart::Store;
 use redstart::RedStart;
 
 mod controller;
@@ -33,6 +34,7 @@ mod redstart;
 fn setup() -> iron::Chain
 {
     let config = ConfigReader::new();
+    let cookieparser = CookieParser::new(Store::new());
 	let mut chain = Chain::new(RedStart);
 	chain.link_before(URLParser);
 	chain.link_before(cookieparser);

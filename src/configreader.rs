@@ -39,7 +39,7 @@ impl ConfigReader
                         let mut fd = File::open(&configpath);
                         fd.unwrap()
                     }
-                    IoErrorKind::OtherIoError => panic!("File error: {}!", e),
+                    _ => panic!("File error: {}!", e),
                 }
             }
         };
