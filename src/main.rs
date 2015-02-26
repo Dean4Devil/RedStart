@@ -17,24 +17,24 @@ use iron::prelude::*;
 
 //use controller::Reservation;
 
-//use redstart::ConfigReader;
-use redstart::Store;
+use configreader::ConfigReader;
 use redstart::URLParser;
 use redstart::CookieParser;
 use redstart::CookieSetter;
 //use redstart::CookieSetter;
 //use redstart::PermCheck;
 //use redstart::Logger;
+use redstart::Store;
 use redstart::RedStart;
 
 mod controller;
-
 mod model;
-
+mod configreader;
 mod redstart;
 
 fn setup() -> iron::Chain
 {
+    let config = ConfigReader::new();
     let sessionstore = Store::new();
     let redstart = RedStart::new(sessionstore.clone());
     let cookieparser = CookieParser::new(sessionstore.clone());
