@@ -36,7 +36,7 @@ fn setup() -> iron::Chain
 {
     let mut config = ConfigReader::new();
     let address = config.get_value_or::<String>("General.address", "localhost".to_string());
-    let port = config.get_value_or::<String>("General.port", "3000".to_string());
+    let port = config.get_value_or::<i32>("General.port", 3000);
     println!("RedStart starting on {}:{}", address, port);
     let sessionstore = Store::new();
     let redstart = RedStart::new(sessionstore.clone());
