@@ -34,7 +34,10 @@ mod redstart;
 
 fn setup() -> iron::Chain
 {
-    let config = ConfigReader::new();
+    let mut config = ConfigReader::new();
+    let address = config.get_value_or::<String>("General.address", "localhost".to_string());
+    let port = config.get_value_or::<String>("General.port", "3000".to_string());
+    println!("RedStart starting on {}:{}", address, port);
     let sessionstore = Store::new();
     let redstart = RedStart::new(sessionstore.clone());
     let cookieparser = CookieParser::new(sessionstore.clone());

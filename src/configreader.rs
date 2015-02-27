@@ -50,21 +50,21 @@ impl ConfigReader
             Some(val) => val,
             None => panic!("Configfile parse error! Check config syntax!"),
         };
-        println!("{:?}", value);
+        // println!("{:?}", value);
         ConfigReader { config_map: value }
     }
 
     /// Return the value that belongs to the key given. If no value was found, `None` will be returned
-    pub fn get_value<T>(key: &String) -> Option<T>
+    pub fn get_value<T>(&mut self, key: &str) -> Option<T>
     {
         None
     }
 
     /// Return the value that belongs to the key given. If no value was found, a given default value
     /// will be returned.
-    pub fn get_value_or<T>(key: &String, default: T) -> T
+    pub fn get_value_or<T>(&mut self, key: &str, default: T) -> T
     {
-        match ConfigReader::get_value::<T>(key)
+        match self.get_value::<T>(key)
         {
             Some(e) => e,
             None => default,
