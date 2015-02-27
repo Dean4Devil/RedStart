@@ -58,6 +58,10 @@ impl ConfigReader
     /// Return the value that belongs to the key given. If no value was found, `None` will be returned
     pub fn get_value<T>(&mut self, key: &str) -> Option<T>
     {
+        //1. Slice key into a Vector(e.g. ["General", "name"])
+        //2. Loop for every element of the vector and get deep into the BTreeMap
+        //3. If no deeper step possible return result
+        //4. If Element not available, return None
         None
     }
 
