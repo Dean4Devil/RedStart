@@ -11,6 +11,8 @@ extern crate toml;
 extern crate cookie;
 
 //use std::error::Error;
+use std::str::FromStr;
+use std::old_io::net::ip::{ToSocketAddr, SocketAddr, IpAddr};
 
 use iron::prelude::*;
 //use iron::AroundMiddleware;
@@ -18,6 +20,7 @@ use iron::prelude::*;
 //use controller::Reservation;
 
 use configreader::ConfigReader;
+use redstart::API;
 use redstart::URLParser;
 use redstart::CookieParser;
 use redstart::CookieSetter;
@@ -32,26 +35,28 @@ mod model;
 mod configreader;
 mod redstart;
 
-fn setup() -> iron::Chain
+fn setup() -> (API, iron::Chain)
 {
-    let mut config = ConfigReader::new();
-    let serve_name = config.get_value_or::<String>("General.name", "PeachesDev RedStart".to_string());
-    let address = config.get_value_or::<String>("Networking.address", "localhost".to_string());
-    let port = config.get_value_or::<i32>("Networking.port", 3000);
+    let mut api = API::new();
+    let serve_name = api.config.get_value_or::<String>("General.name", "PeachesDev RedStart".to_string());
+    let address = api.config.get_value_or::<String>("Networking.address", "localhost".to_string());
+    let port = api.config.get_value_or::<i32>("Networking.port", 3000);
     println!("{} starting on {}:{}", serve_name, address, port);
-    let sessionstore = Store::new();
-    let redstart = RedStart::new(sessionstore.clone());
-    let cookieparser = CookieParser::new(sessionstore.clone());
-    let cookesetter = CookieSetter::new(sessionstore.clone());
+    let redstart = RedStart::new(api.sessions.clone());
+    let cookieparser = CookieParser::new(api.sessions.clone());
+    let cookesetter = CookieSetter::new(api.sessions.clone());
 	let mut chain = Chain::new(redstart);
 	chain.link_before(URLParser);
 	chain.link_before(cookieparser);
     chain.link_after(cookesetter);
-	return chain;
+	return (api, chain);
 }
 
 fn main()
 {
-	let chain: iron::Chain = setup();
-	Iron::new(chain).http("localhost:3000").unwrap();
+	let (mut api, chain) = setup();
+    let addr: IpAddr = api.config.get_value_or::<String>("Networking.address", "localhost".to_string()).parse().unwrap();
+    let port = api.config.get_value_or::<u16>("Networking.port", 3000);
+    let sock_addr = SocketAddr { ip: addr, port: port };
+	Iron::new(chain).http(sock_addr).unwrap();
 }

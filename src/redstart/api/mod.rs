@@ -1,5 +1,21 @@
 //! This module contains all the API sub-modules that are useable by RedStart
+use configreader::ConfigReader;
+use redstart::session::Store;
 
-pub use user::User;
+pub struct API
+{
+    pub config: ConfigReader,
+    pub sessions: Store,
+}
 
-pub mod user;
+impl API
+{
+    pub fn new() -> API
+    {
+        API
+        {
+            config: ConfigReader::new(),
+            sessions: Store::new(),
+        }
+    }
+}
