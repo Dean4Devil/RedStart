@@ -6,12 +6,13 @@ use hyper::header::ContentType;
 use hyper::mime;
 
 use controller::Reservation;
+use controller::User;
 
 // Re-export Logger and Router so you can use redstart::Router instead of redstart::router::Router.
 pub use self::logger::Logger;
 pub use self::urlparser::{URLParser, URL};
 pub use self::cookieparser::CookieParser;
-pub use self::configreader::ConfigReader;
+pub use self::cookiesetter::CookieSetter;
 pub use self::authentication::Authentication as Auth;
 pub use self::session::{Session, Store, SessionStore};
 //pub use self::authentication::Authentication::API as AuthAPI;
@@ -19,13 +20,24 @@ pub use self::session::{Session, Store, SessionStore};
 mod logger;
 mod urlparser;
 mod cookieparser;
+mod cookiesetter;
 mod permission;
-mod configreader;
 mod authentication;
-mod session;
+pub mod session;
 // End Re-export
 
-pub struct RedStart;
+pub struct RedStart
+{
+    sessionstore: Store,
+}
+
+impl RedStart
+{
+    pub fn new(sessionstore: Store) -> RedStart
+    {
+        RedStart { sessionstore: sessionstore }
+    }
+}
 
 #[allow(unused_variables)]
 impl Handler for RedStart
@@ -54,12 +66,14 @@ impl Handler for RedStart
         }
 
         let reservation = Reservation::new();
+        let user = User::new(self.sessionstore.clone());
 
         let status: Status;
         let body: Box<Reader + Send>;
         let (status, body) = match controller
         {
             "reservation" => { reservation.call(model, req) },
+            "user" => { user.call(model, req) },
             _ =>
             {
                 (status::NotFound, "".to_string())

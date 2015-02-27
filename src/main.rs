@@ -17,27 +17,36 @@ use iron::prelude::*;
 
 //use controller::Reservation;
 
-//use redstart::ConfigReader;
-use redstart::Store;
+use configreader::ConfigReader;
 use redstart::URLParser;
 use redstart::CookieParser;
+use redstart::CookieSetter;
 //use redstart::CookieSetter;
 //use redstart::PermCheck;
 //use redstart::Logger;
+use redstart::Store;
 use redstart::RedStart;
 
 mod controller;
-
 mod model;
-
+mod configreader;
 mod redstart;
 
 fn setup() -> iron::Chain
 {
-    let cookieparser = CookieParser::new(Store::new());
-	let mut chain = Chain::new(RedStart);
+    let mut config = ConfigReader::new();
+    let serve_name = config.get_value_or::<String>("General.name", "PeachesDev RedStart".to_string());
+    let address = config.get_value_or::<String>("Networking.address", "localhost".to_string());
+    let port = config.get_value_or::<i32>("Networking.port", 3000);
+    println!("{} starting on {}:{}", serve_name, address, port);
+    let sessionstore = Store::new();
+    let redstart = RedStart::new(sessionstore.clone());
+    let cookieparser = CookieParser::new(sessionstore.clone());
+    let cookesetter = CookieSetter::new(sessionstore.clone());
+	let mut chain = Chain::new(redstart);
 	chain.link_before(URLParser);
 	chain.link_before(cookieparser);
+    chain.link_after(cookesetter);
 	return chain;
 }
 
