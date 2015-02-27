@@ -35,7 +35,8 @@ impl ConfigReader
                     IoErrorKind::FileNotFound =>
                     {
                         let mut fd = File::create(&configpath);
-                        fd.write(b"[RedStart]\n\taddress = \"127.0.0.1\"\n\tport = 8080\n\tloglevel = \"NORMAL\"\n\tlogfile = \"log/default.log\"");
+                        fd.write(b"[General]\r\nname=\"RedStart\"\r\n[Networking]\r\naddress = \"127.0.0.1\"\r\nport = 8080\r\n[Logging]\r\nloglevel = \"NORMAL\"\r\nlogfile = \"log/default.log\"\r\n"
+);
                         let mut fd = File::open(&configpath);
                         fd.unwrap()
                     }
@@ -50,7 +51,7 @@ impl ConfigReader
             Some(val) => val,
             None => panic!("Configfile parse error! Check config syntax!"),
         };
-        // println!("{:?}", value);
+        println!("{:?}", value);
         ConfigReader { config_map: value }
     }
 
