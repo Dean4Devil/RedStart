@@ -5,9 +5,11 @@ use std::sync::mpsc::{Sender, Receiver};
 
 use toml::{self, Value};
 
+use serialize::Decodable;
+
 pub struct ConfigReader
 {
-    config_map: BTreeMap<String, Value>,
+    config_map: Value, //BTreeMap<String, Value>,
 }
 
 impl ConfigReader
@@ -46,28 +48,29 @@ impl ConfigReader
         };
         let configstring = configfile.read_to_string().unwrap();
         let mut configparser = toml::Parser::new(configstring.as_slice());
-        let value = match configparser.parse()
+        let table = match configparser.parse()
         {
             Some(val) => val,
             None => panic!("Configfile parse error! Check config syntax!"),
         };
-        println!("{:?}", value);
+        println!("{:?}", table);
+        let value: Value = Value::Table(table);
         ConfigReader { config_map: value }
     }
 
     /// Return the value that belongs to the key given. If no value was found, `None` will be returned
-    pub fn get_value<T>(&mut self, key: &str) -> Option<T>
+    pub fn get_value<T: Decodable>(&mut self, key: &str) -> Option<T>
     {
-        //1. Slice key into a Vector(e.g. ["General", "name"])
-        //2. Loop for every element of the vector and get deep into the BTreeMap
-        //3. If no deeper step possible return result
-        //4. If Element not available, return None
-        None
+        match self.config_map.lookup(key)
+        {
+            Some(value) => toml::decode::<T>(value.clone()),
+            None => None
+        }
     }
 
     /// Return the value that belongs to the key given. If no value was found, a given default value
     /// will be returned.
-    pub fn get_value_or<T>(&mut self, key: &str, default: T) -> T
+    pub fn get_value_or<T: Decodable>(&mut self, key: &str, default: T) -> T
     {
         match self.get_value::<T>(key)
         {
