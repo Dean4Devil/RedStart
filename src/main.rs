@@ -35,9 +35,10 @@ mod redstart;
 fn setup() -> iron::Chain
 {
     let mut config = ConfigReader::new();
-    let address = config.get_value_or::<String>("General.address", "localhost".to_string());
-    let port = config.get_value_or::<i32>("General.port", 3000);
-    println!("RedStart starting on {}:{}", address, port);
+    let serve_name = config.get_value_or::<String>("General.name", "PeachesDev RedStart".to_string());
+    let address = config.get_value_or::<String>("Networking.address", "localhost".to_string());
+    let port = config.get_value_or::<i32>("Networking.port", 3000);
+    println!("{} starting on {}:{}", serve_name, address, port);
     let sessionstore = Store::new();
     let redstart = RedStart::new(sessionstore.clone());
     let cookieparser = CookieParser::new(sessionstore.clone());
