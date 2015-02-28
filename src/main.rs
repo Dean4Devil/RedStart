@@ -20,19 +20,22 @@ use iron::prelude::*;
 //use controller::Reservation;
 
 use configreader::ConfigReader;
-use redstart::API;
-use redstart::URLParser;
-use redstart::CookieParser;
-use redstart::CookieSetter;
-//use redstart::CookieSetter;
-//use redstart::PermCheck;
-//use redstart::Logger;
-use redstart::Store;
+use api::API;
+use urlparser::URLParser;
+use cookieparser::CookieParser;
+use cookiesetter::CookieSetter;
+use session::Store;
 use redstart::RedStart;
 
+mod api;
+mod authentication;
 mod controller;
 mod model;
 mod configreader;
+mod cookiesetter;
+mod cookieparser;
+mod urlparser;
+mod session;
 mod redstart;
 
 fn setup() -> (API, iron::Chain)

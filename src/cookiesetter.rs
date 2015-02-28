@@ -4,7 +4,7 @@ use iron::headers::SetCookie;
 
 use cookie::Cookie;
 
-use redstart::{Session, Store, SessionStore};
+use session::{Session, Store, SessionStore};
 
 pub struct CookieSetter
 {

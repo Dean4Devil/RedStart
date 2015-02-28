@@ -3,9 +3,8 @@ use iron::BeforeMiddleware;
 use iron::status;
 use iron::headers::Cookie as CookieHeader;
 
-use redstart::Auth::AuthError;
-use redstart::Session;
-use redstart::session::{Store, SessionStore};
+use authentication::Authentication::AuthError;
+use session::{Session, Store, SessionStore};
 
 pub struct CookieParser
 {

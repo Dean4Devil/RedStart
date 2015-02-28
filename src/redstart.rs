@@ -8,25 +8,8 @@ use hyper::mime;
 use controller::Reservation;
 use controller::User;
 
-// Re-export Logger and Router so you can use redstart::Router instead of redstart::router::Router.
-pub use self::api::API;
-pub use self::logger::Logger;
-pub use self::urlparser::{URLParser, URL};
-pub use self::cookieparser::CookieParser;
-pub use self::cookiesetter::CookieSetter;
-pub use self::authentication::Authentication as Auth;
-pub use self::session::{Session, Store, SessionStore};
-//pub use self::authentication::Authentication::API as AuthAPI;
-
-mod api;
-mod logger;
-mod urlparser;
-mod cookieparser;
-mod cookiesetter;
-mod permission;
-mod authentication;
-pub mod session;
-// End Re-export
+use session::{Session, Store};
+use urlparser::URL;
 
 pub struct RedStart
 {

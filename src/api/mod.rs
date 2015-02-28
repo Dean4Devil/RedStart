@@ -1,6 +1,6 @@
 //! This module contains all the API sub-modules that are useable by RedStart
 use configreader::ConfigReader;
-use redstart::session::Store;
+use session::Store;
 
 pub struct API
 {

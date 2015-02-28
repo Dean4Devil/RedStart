@@ -3,8 +3,7 @@ use std::rand::{Rng, OsRng};
 use iron::prelude::*;
 use iron::status::{self, Status};
 
-use redstart::Store;
-use redstart::{Session, SessionStore};
+use session::{Session, Store, SessionStore};
 
 pub struct User
 {

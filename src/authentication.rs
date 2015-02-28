@@ -7,7 +7,7 @@ pub mod Authentication
     use iron::{IronResult, IronError};
     use iron::status;
 
-    use redstart::Session;
+    use session::Session;
 
 	use std::error::Error;
 	use std::fmt::{self, Debug};
