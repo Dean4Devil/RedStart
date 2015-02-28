@@ -9,12 +9,13 @@ impl Reservation
     {
         Reservation
     }
-    pub fn call(&self, model: &str, req: &mut Request) -> (status::Status, String)
+    pub fn call(&self, model: &str, req: &mut Request) -> Response
     {
         let timetable = Timetable::new();
         let reservation = ReservationDisplay::new();
         // Currently statically defined, later pull from request.
-        match model
+        let body: Box<Reader + Send>;
+        let (status, body) = match model
         {
             "timetable" =>
             {
@@ -28,7 +29,9 @@ impl Reservation
             {
                 (status::NotFound, "".to_string())
             },
-        }
+        };
+        let mut res = Response::new();
+        res.set(status).set(body)
     }
 
 }

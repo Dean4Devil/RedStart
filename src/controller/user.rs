@@ -16,12 +16,14 @@ impl User
 		User { sessionstore: sessionstore }
 	}
 
-	pub fn call(&self, model: &str, req: &mut Request) -> (Status, String)
+	pub fn call(&self, model: &str, req: &mut Request) -> Response
 	{
         // The Store is a Arc so no problem cloning it.
         let login = Login::new(self.sessionstore.clone());
         let logout = Logout::new(self.sessionstore.clone());
-		match model
+
+        let body: Box<Reader + Send>;
+		let (status, body) = match model
 		{
 			"login" =>
 			{
@@ -35,7 +37,9 @@ impl User
 			{
 				(status::NotFound, "".to_string())
 			},
-		}
+		};
+
+        Response::new().set(status).set(body)
 	}
 }
 
