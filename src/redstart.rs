@@ -5,11 +5,14 @@ use iron::status;
 use hyper::header::ContentType;
 use hyper::mime;
 
+use cookie::Cookie;
+
 use controller::Reservation;
 use controller::User;
 
 use session::Store;
 use urlparser::URL;
+use cookiesetter::CookieReq;
 
 pub struct RedStart
 {
@@ -43,6 +46,7 @@ impl Handler for RedStart
                 Response::new().set(status::NotFound).set(body)
             },
         };
+
         let mime: mime::Mime = "application/json".parse().unwrap();
         res.headers.set(ContentType(mime));
         Ok(res)

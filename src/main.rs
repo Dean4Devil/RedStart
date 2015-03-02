@@ -11,20 +11,17 @@ extern crate toml;
 extern crate cookie;
 
 //use std::error::Error;
-use std::str::FromStr;
-use std::old_io::net::ip::{ToSocketAddr, SocketAddr, IpAddr};
+use std::old_io::net::ip::{SocketAddr, IpAddr};
 
 use iron::prelude::*;
 //use iron::AroundMiddleware;
 
 //use controller::Reservation;
 
-use configreader::ConfigReader;
 use api::API;
 use urlparser::URLParser;
 use cookieparser::CookieParser;
 use cookiesetter::CookieSetter;
-use session::Store;
 use redstart::RedStart;
 
 mod api;
@@ -41,10 +38,6 @@ mod redstart;
 fn setup() -> (API, iron::Chain)
 {
     let mut api = API::new();
-    let serve_name = api.config.get_value_or::<String>("General.name", "PeachesDev RedStart".to_string());
-    let address = api.config.get_value_or::<String>("Networking.address", "localhost".to_string());
-    let port = api.config.get_value_or::<i32>("Networking.port", 3000);
-    println!("{} starting on {}:{}", serve_name, address, port);
     let redstart = RedStart::new(api.sessions.clone());
     let cookieparser = CookieParser::new(api.sessions.clone());
     let cookesetter = CookieSetter::new(api.sessions.clone());

@@ -4,6 +4,7 @@ use iron::prelude::*;
 use iron::status::{self, Status};
 
 use session::{Session, Store, SessionStore};
+use cookiesetter::CookieReq;
 
 pub struct User
 {
@@ -63,7 +64,7 @@ impl Login
             println!("{}", session_key);
             let session = Session::new(session_key.clone(), "testuser".to_string());
             self.sessionstore.put(&session_key, session);
-            req.extensions.insert::<Session>(session_key);
+            req.extensions.insert::<CookieReq>(vec![["auth-token".to_string(), session_key]]);
             (status::Accepted, "".to_string())
         }
         else

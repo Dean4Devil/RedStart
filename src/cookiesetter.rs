@@ -1,6 +1,7 @@
 use iron::prelude::*;
 use iron::AfterMiddleware;
 use iron::headers::SetCookie;
+use iron::typemap::Key;
 
 use cookie::Cookie;
 
@@ -23,12 +24,15 @@ impl AfterMiddleware for CookieSetter
 {
     fn after(&self, req: &mut Request, mut res: Response) -> IronResult<Response>
     {
-        if req.extensions.contains::<Session>()
+        if req.extensions.contains::<CookieReq>()
         {
-            let session_key: String = req.extensions.get_mut::<Session>().unwrap().clone();
-            let cookie = Cookie::new("auth-token".to_string(), session_key);
-            res.headers.set(SetCookie(vec![cookie]));
+            let cookievalvec: Vec<[String; 2]> = req.extensions.remove::<CookieReq>().unwrap();
+            let cookies: Vec<Cookie> = cookievalvec.into_iter().map(|[x, y]| Cookie::new(x,y)).collect();
+            res.headers.set(SetCookie(cookies));
         }
         Ok(res)
     }
 }
+
+pub struct CookieReq;
+impl Key for CookieReq { type Value = Vec<[String; 2]>; }
