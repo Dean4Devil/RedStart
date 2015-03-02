@@ -1,3 +1,4 @@
+use std::os;
 use std::old_io;
 use std::old_io::{fs, File, IoErrorKind};
 use std::collections::BTreeMap;
@@ -16,14 +17,17 @@ impl ConfigReader
 {
     pub fn new() -> ConfigReader
     {
+        let curr_dir = os::self_exe_path().expect("huh?");
         // Create the configuration directory if it does not exist yet.
-        let configdir = Path::new("config/");
+        let configdir = curr_dir.join("config/");
+        //let configdir = Path::new("config/");
         // This returns a Result with an error if the directory already exists or the user does not
         // have write permissions. We ignore that possibility for now.
         fs::mkdir(&configdir, old_io::USER_RWX);
 
         // Open the configuration file.
-        let configpath  =  Path::new("config/redstart.toml");
+        let configpath  = curr_dir.join("config/redstart.toml");
+        //let configpath  = Path::new("config/redstart.toml");
         let mut configfile = match File::open(&configpath)
         {
             // File does exists -> return file descriptor.
