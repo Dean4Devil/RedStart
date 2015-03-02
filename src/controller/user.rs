@@ -3,8 +3,8 @@ use std::rand::{Rng, OsRng};
 use iron::prelude::*;
 use iron::status::{self, Status};
 
-use redstart::Store;
-use redstart::{Session, SessionStore};
+use session::{Session, Store, SessionStore};
+use cookiesetter::CookieReq;
 
 pub struct User
 {
@@ -17,12 +17,14 @@ impl User
 		User { sessionstore: sessionstore }
 	}
 
-	pub fn call(&self, model: &str, req: &mut Request) -> (Status, String)
+	pub fn call(&self, model: &str, req: &mut Request) -> Response
 	{
         // The Store is a Arc so no problem cloning it.
         let login = Login::new(self.sessionstore.clone());
         let logout = Logout::new(self.sessionstore.clone());
-		match model
+
+        let body: Box<Reader + Send>;
+		let (status, body) = match model
 		{
 			"login" =>
 			{
@@ -36,7 +38,9 @@ impl User
 			{
 				(status::NotFound, "".to_string())
 			},
-		}
+		};
+
+        Response::new().set(status).set(body)
 	}
 }
 
@@ -60,7 +64,7 @@ impl Login
             println!("{}", session_key);
             let session = Session::new(session_key.clone(), "testuser".to_string());
             self.sessionstore.put(&session_key, session);
-            req.extensions.insert::<Session>(session_key);
+            req.extensions.insert::<CookieReq>(vec![["auth-token".to_string(), session_key]]);
             (status::Accepted, "".to_string())
         }
         else
