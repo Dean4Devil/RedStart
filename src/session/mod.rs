@@ -55,3 +55,20 @@ pub trait SessionStore
     fn put(&self, key: &String, session: Session);
     fn del(&self, key: &String);
 }
+
+#[cfg(test)]
+mod tests
+{
+    use super::*;
+
+    #[test]
+    fn session_gen()
+    {
+        let key = "testkey".to_string();
+        let uname = "testusername".to_string();
+        let session = Session::new(key.clone(), uname.clone());
+        assert_eq!(session.key, key);
+        assert_eq!(session.username, uname);
+    }
+}
+
