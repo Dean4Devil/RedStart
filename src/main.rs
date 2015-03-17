@@ -44,6 +44,7 @@ use redstart::RedStart;
 mod api;
 mod authentication;
 mod controller;
+mod data;
 mod model;
 mod configreader;
 mod cookiesetter;
