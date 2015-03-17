@@ -56,3 +56,33 @@ fn main()
     let sock_addr = SocketAddr { ip: addr, port: port };
 	Iron::new(chain).http(sock_addr).unwrap();
 }
+
+#[cfg(test)]
+mod tests
+{
+    use super::*;
+
+    use std::old_io::util::NullReader;
+    use std::old_io::net::ip::{SocketAddr, IpAddr};
+    use hyper::http::HttpReader::EmptyReader;
+    use iron::request::{Request, Url};
+    use iron::headers::Headers;
+    use iron::request::Body;
+    use iron::method::Method;
+    use iron::TypeMap;
+    pub fn create_fake_request(method: Method, url: &str) // -> Request
+    {
+        let addr: IpAddr = "localhost".parse().unwrap();
+        /* Request
+        {
+            url: Url::parse(url).unwrap(),
+            remote_addr: SocketAddr { ip: addr, port: 8123 },
+            local_addr: SocketAddr { ip: addr, port: 3000 },
+            headers: Headers::new(),
+            body: Body::new(EmptyReader(MockStream::new())),
+            method: Method::Get,
+            extensions: TypeMap::new()
+        } */
+    }
+}
+
