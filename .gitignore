@@ -9,7 +9,10 @@ Cargo.lock
 *.swp
 
 # Ignore libggnet for now
-/lib/libggnet
+/lib/libggnet/
 
 # Ignore the build directory
-/build
+/build/
+
+# And the config directory
+/config/
