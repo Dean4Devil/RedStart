@@ -41,7 +41,7 @@ impl ConfigReader
                     IoErrorKind::FileNotFound =>
                     {
                         let mut fd = File::create(&configpath);
-                        fd.write(b"[General]\r\nname=\"RedStart\"\r\n[Networking]\r\naddress = \"127.0.0.1\"\r\nport = 8080\r\n[Logging]\r\nloglevel = \"NORMAL\"\r\nlogfile = \"log/default.log\"\r\n"
+                        fd.write(b"[General]\nname=\"RedStart\"\n\n[Networking]\naddress = \"127.0.0.1\"\nport = 8080\n\n[Logging]\nloglevel = \"NORMAL\"\nlogfile = \"log/default.log\"\n\n[Security]\nhttps = false\ncertificate = \"../../ssl/cert.pem\"\nkey = \"../../ssl/key.pem\"\n"
 );
                         let mut fd = File::open(&configpath);
                         fd.unwrap()

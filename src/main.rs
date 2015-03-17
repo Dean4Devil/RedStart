@@ -57,16 +57,21 @@ fn main()
     let port = api.config.get_value_or::<u16>("Networking.port", 3000);
     let sock_addr = SocketAddr { ip: addr, port: port };
 
-    let mut cert_path = os::self_exe_path().unwrap();
-    let mut key_path = cert_path.clone();
-    let cert_conf = api.config.get_value_or::<String>("Security.certificate", "snakeoil.key".to_string());
-    cert_path.push(cert_conf);
-    let key_conf = api.config.get_value_or::<String>("Security.key", "snakeoil.cert".to_string());
-    key_path.push(key_conf);
+    if api.config.get_value_or::<bool>("Security.https", false)
+    {
+        let mut cert_path = os::self_exe_path().unwrap();
+        let mut key_path = cert_path.clone();
+        let cert_conf = api.config.get_value_or::<String>("Security.certificate", "snakeoil.key".to_string());
+        cert_path.push(cert_conf);
+        let key_conf = api.config.get_value_or::<String>("Security.key", "snakeoil.cert".to_string());
+        key_path.push(key_conf);
 
-    println!("{}", key_path.as_str().unwrap());
-
-	Iron::new(chain).https(sock_addr, cert_path, key_path).unwrap();
+	    Iron::new(chain).https(sock_addr, cert_path, key_path).unwrap();
+    }
+    else
+    {
+        Iron::new(chain).http(sock_addr).unwrap();
+    }
 }
 
 #[cfg(test)]
