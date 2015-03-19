@@ -1,0 +1,3 @@
+[submodule "lib/libldap"]
+	path = lib/libldap
+	url = https://github.com/Dean4Devil/rust-ldap.git
