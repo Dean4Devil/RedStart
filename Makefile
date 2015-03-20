@@ -2,8 +2,8 @@ RC = rustc
 OUT_DIR = ./build
 LIB_DIR = ./lib
 
-DEBUG_OPT = -g
-RELEASE_OPT = -O
+DEBUG_OPT = -g --cfg debug
+RELEASE_OPT = -O --cfg release
 TEST_OPT = --test
 
 CrateName = RedStart
