@@ -9,6 +9,7 @@ extern crate url;
 extern crate "rustc-serialize" as serialize;
 extern crate toml;
 extern crate cookie;
+extern crate ldap;
 
 //use std::error::Error;
 use std::os;
