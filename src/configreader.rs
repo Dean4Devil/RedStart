@@ -8,6 +8,7 @@ use toml::{self, Value};
 
 use serialize::Decodable;
 
+#[derive(Clone)]
 pub struct ConfigReader
 {
     config_map: Value, //BTreeMap<String, Value>,

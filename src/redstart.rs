@@ -10,20 +10,21 @@ use cookie::Cookie;
 use controller::Reservation;
 use controller::User;
 
+use api::API;
 use session::Store;
 use urlparser::URL;
 use cookiesetter::CookieReq;
 
 pub struct RedStart
 {
-    sessionstore: Store,
+    api: API,
 }
 
 impl RedStart
 {
-    pub fn new(sessionstore: Store) -> RedStart
+    pub fn new(api: API) -> RedStart
     {
-        RedStart { sessionstore: sessionstore }
+        RedStart { api: api }
     }
 }
 
@@ -33,7 +34,7 @@ impl Handler for RedStart
     fn handle(&self, req: &mut Request) -> IronResult<Response>
     {
         let reservation = Reservation::new();
-        let user = User::new(self.sessionstore.clone());
+        let user = User::new(self.api.clone());
 
         let ext_url: [String; 2] = req.extensions.remove::<URL>().unwrap(); // If this panics, URLParser has a bug! :D
         let mut res: Response = match ext_url[0].as_slice()

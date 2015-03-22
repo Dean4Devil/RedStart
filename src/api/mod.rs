@@ -2,12 +2,16 @@
 use configreader::ConfigReader;
 use session::Store;
 
+pub use self::ggnet::GGNet;
+
 mod ggnet;
 
+#[derive(Clone)]
 pub struct API
 {
     pub config: ConfigReader,
     pub sessions: Store,
+    pub ggnet: GGNet,
 }
 
 impl API
@@ -18,6 +22,7 @@ impl API
         {
             config: ConfigReader::new(),
             sessions: Store::new(),
+            ggnet: GGNet::new(),
         }
     }
 }

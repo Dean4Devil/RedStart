@@ -1,27 +1,33 @@
 use std::rand::{Rng, OsRng};
 
+use serialize::json;
+use serialize::Encodable;
+use serialize::json::{ToJson,Encoder};
+
 use iron::prelude::*;
 use iron::status::{self, Status};
 
+use api::{API, GGNet};
 use session::{Session, Store, SessionStore};
 use cookiesetter::CookieReq;
 
 pub struct User
 {
-    sessionstore: Store,
+    api: API,
 }
 impl User
 {
-	pub fn new(sessionstore: Store) -> User
+	pub fn new(api: API) -> User
 	{
-		User { sessionstore: sessionstore }
+		User { api: api }
 	}
 
 	pub fn call(&self, model: &str, req: &mut Request) -> Response
 	{
         // The Store is a Arc so no problem cloning it.
-        let login = Login::new(self.sessionstore.clone());
-        let logout = Logout::new(self.sessionstore.clone());
+        let login = Login::new(self.api.sessions.clone());
+        let logout = Logout::new(self.api.sessions.clone());
+        let mut list = List::new(self.api.ggnet.clone());
 
         let body: Box<Reader + Send>;
 		let (status, body) = match model
@@ -34,6 +40,10 @@ impl User
 			{
 				logout.call(req)
 			},
+            "list" =>
+            {
+                list.call(req)
+            }
 			_ =>
 			{
 				(status::NotFound, "".to_string())
@@ -96,5 +106,25 @@ impl Logout
         {
             (status::Unauthorized, "".to_string())
         }
+    }
+}
+
+struct List
+{
+    ggnet: GGNet,
+}
+
+impl List
+{
+    pub fn new(ggnet: GGNet) -> List
+    {
+        List { ggnet: ggnet }
+    }
+    pub fn call(&mut self, req: &mut Request) -> (Status, String)
+    {
+        let res_vec = self.ggnet.get_users("");
+        let res_json = res_vec.to_json();
+
+        (status::Ok, json::encode(&res_vec).unwrap())
     }
 }
