@@ -2,6 +2,8 @@
 use configreader::ConfigReader;
 use session::Store;
 
+mod ggnet;
+
 pub struct API
 {
     pub config: ConfigReader,
