@@ -41,7 +41,7 @@ mod redstart;
 fn setup() -> (API, iron::Chain)
 {
     let mut api = API::new();
-    let redstart = RedStart::new(api.sessions.clone());
+    let redstart = RedStart::new(api.clone());
     let cookieparser = CookieParser::new(api.sessions.clone());
     let cookesetter = CookieSetter::new(api.sessions.clone());
 	let mut chain = Chain::new(redstart);
