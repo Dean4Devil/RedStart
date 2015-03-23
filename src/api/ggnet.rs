@@ -75,7 +75,8 @@ impl GGNet
             let mut entry = entry_o.unwrap();
             if entry.is_null() { break; }
             
-            users.push(entry.get_values(&mut ld, "cn"));
+            // get_values returns a vector. We only want the first element.
+            users.push(entry.get_values(&mut ld, "cn")[0].clone());
             
             entry_o = entry.next_entry(&mut ld);
         }
@@ -101,7 +102,8 @@ impl GGNet
             if entry_o.is_none() { break; }
             let mut entry = entry_o.unwrap();
             
-            groups.push(entry.get_values(&mut ld, "cn"));
+            // get_values returns a vector. We only want the first element.
+            groups.push(entry.get_values(&mut ld, "cn")[0].clone());
             
             entry_o = entry.next_entry(&mut ld);
         }
