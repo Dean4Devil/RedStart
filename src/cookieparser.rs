@@ -6,6 +6,7 @@ use iron::headers::Cookie as CookieHeader;
 use authentication::Authentication::AuthError;
 use session::{Session, Store, SessionStore};
 
+/// The CookieParser looks for Cookies in incoming requests and parses them by given rules.
 pub struct CookieParser
 {
     sessionstore: Store,
@@ -19,13 +20,13 @@ impl CookieParser
     }
 }
 
+// BeforeMiddleware means that CookieParser gets called before the main redstart Handler.
 impl BeforeMiddleware for CookieParser
 {
     fn before(&self, req: &mut Request) -> IronResult<()>
     {
         // Check if there are cookies in the request
         if req.headers.has::<CookieHeader>() {
-            println!("Request comes with Cookies!! *nom*");
             let cookies = req.headers.get::<CookieHeader>().unwrap();
             for cookie in cookies.iter()
             {
@@ -47,17 +48,15 @@ impl BeforeMiddleware for CookieParser
                         }
                     },
 
-
+                    // Anything *except* "auth-token"
                     _ =>
                     {
-                        println!("Got unknown cookie: {}", cookie);
                         Ok(())
                     }
                 };
 
                 if result.is_err()
                 {
-                    println!("Cookie parsing errored!!");
                     return result;
                 }
             }

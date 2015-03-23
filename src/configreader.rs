@@ -9,6 +9,7 @@ use toml::{self, Value};
 use serialize::Decodable;
 
 #[derive(Clone)]
+/// The configparser reads the config file and provides functions to access config values.
 pub struct ConfigReader
 {
     config_map: Value, //BTreeMap<String, Value>,
@@ -16,11 +17,15 @@ pub struct ConfigReader
 
 impl ConfigReader
 {
+    /// Create a new ConfigReader object. This should only be called in the setup() function.
     pub fn new() -> ConfigReader
     {
+        // Get the current pwd
         let curr_dir = os::self_exe_path().expect("huh?");
+
         // Create the configuration directory if it does not exist yet.
         let configdir = curr_dir.join("config/");
+
         //let configdir = Path::new("config/");
         // This returns a Result with an error if the directory already exists or the user does not
         // have write permissions. We ignore that possibility for now.
@@ -41,9 +46,14 @@ impl ConfigReader
                     IoErrorKind::PermissionDenied => panic!("Could not read config file. Does it have the correct permissions?"),
                     IoErrorKind::FileNotFound =>
                     {
+                        // There is no config file. So create one.
+                        // This opens the file in writeable mode.
                         let mut fd = File::create(&configpath);
+                        
+                        // Write default values.
                         fd.write(b"[General]\nname=\"RedStart\"\n\n[Networking]\naddress = \"127.0.0.1\"\nport = 8080\n\n[Logging]\nloglevel = \"NORMAL\"\nlogfile = \"log/default.log\"\n\n[Security]\nhttps = false\ncertificate = \"../../ssl/cert.pem\"\nkey = \"../../ssl/key.pem\"\n"
 );
+                        // Open the file in readonly mode again
                         let mut fd = File::open(&configpath);
                         fd.unwrap()
                     }
@@ -51,14 +61,22 @@ impl ConfigReader
                 }
             }
         };
+
+        // Read the config-file into memory.
         let configstring = configfile.read_to_string().unwrap();
+
+        // Create a new TOML Parser from the config
         let mut configparser = toml::Parser::new(configstring.as_slice());
+
+        // Parse the TOML configfile into a Binary Tree map.
         let table = match configparser.parse()
         {
             Some(val) => val,
             None => panic!("Configfile parse error! Check config syntax!"),
         };
         println!("{:?}", table);
+
+        // Save the BTreeMap into the struct
         let value: Value = Value::Table(table);
         ConfigReader { config_map: value }
     }

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use super::{Session, SessionStore};
 
-// Pure in-memory session storage
+/// Pure in-memory session storage
 pub struct Memory
 {
     // The storeage is a read-write locked hashmap
@@ -18,6 +18,8 @@ impl Memory
     }
 }
 
+// Memory implements SessionStore to guarantee to the parent Store struct that it has a few given
+// functions.
 impl SessionStore for Memory
 {
     fn put(&self, key: &String, session: Session)

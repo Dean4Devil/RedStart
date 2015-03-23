@@ -20,9 +20,12 @@ impl fmt::Display for MalformedRequest {
     }
 }
 
+// Struct that is inserted as Key into req.extensions
 pub struct URL;
 impl Key for URL { type Value = [String; 2]; }
 
+/// The URLParser statically checks if the Request is conforming to the API structure-wise
+/// and will return a MalformedRequest Response if not.
 pub struct URLParser;
 impl BeforeMiddleware for URLParser
 {
@@ -43,6 +46,7 @@ impl BeforeMiddleware for URLParser
             return Err(IronError::new(MalformedRequest, status::BadRequest));
         }
 
+        // URL Structure gets added into req.extensions
         let controller: String = path[0].clone();
         let model: String = path[1].clone();
 

@@ -15,6 +15,7 @@ use session::Store;
 use urlparser::URL;
 use cookiesetter::CookieReq;
 
+/// The main Handler Struct
 pub struct RedStart
 {
     api: API,
