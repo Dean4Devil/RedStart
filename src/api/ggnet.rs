@@ -33,8 +33,9 @@ impl GGNet
         // We grab the lock with (*self.ldap) because Arc acts like a pointer
         let mut ld = (*self.ldap).lock().unwrap();
 
+        let mut searchstring = "(&(cn=$)(objectClass=person))".replace("$", username);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
-        let result = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, "(&(cn=testuser)(objectClass=person))", &["cn", "uidNumber"], 0);
+        let result = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "uidNumber"], 0);
         if result.is_none() { return false; }
 
         let mut entry = result.unwrap().first_entry(&mut ld);
@@ -46,8 +47,9 @@ impl GGNet
         // We grab the lock with (*self.ldap) because Arc acts like a pointer
         let mut ld = (*self.ldap).lock().unwrap();
 
+        let mut searchstring = "(&(cn=$)(objectClass=gruppe))".replace("$", groupname);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
-        let result = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, "(objectClass=gruppe)", &["cn", "displayName", "gidNumber"], 0);
+        let result = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "displayName", "gidNumber"], 0);
 
         if result.is_none() { return false; }
 
@@ -60,8 +62,9 @@ impl GGNet
         // Grab the lock
         let mut ld = (*self.ldap).lock().unwrap();
 
+        let mut searchstring = "(&(cn=$)(objectClass=person))".replace("$", filter);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
-        let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, "(&(cn=*)(objectClass=person))", &["cn", "uidNumber"], 0);
+        let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "uidNumber"], 0);
 
         if result_o.is_none() { return Vec::new(); }
         let mut result = result_o.unwrap();
@@ -89,8 +92,9 @@ impl GGNet
         // Grab the lock
         let mut ld = (*self.ldap).lock().unwrap();
 
+        let mut searchstring = "(&(cn=$)(objectClass=gruppe))".replace("$", filter);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
-        let mut result_o = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, "(objectClass=gruppe)", &["cn", "gidNumber"], 0);
+        let mut result_o = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "gidNumber"], 0);
 
         if result_o.is_none() { return Vec::new(); }
         let mut result = result_o.unwrap();
