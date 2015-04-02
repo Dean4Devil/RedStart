@@ -5,6 +5,8 @@ use ldap;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use std::process::Command;
+
 #[derive(Clone)]
 pub struct GGNet
 {
@@ -19,13 +21,27 @@ impl GGNet
     {
         let mut ldap = ldap::LDAP::new();
         // TODO Replace this with some proper error checking
-        if !ldap.initialize("ldap://localhost:3890") { panic!("GGNet's LDAP Initialization failed!!") }
+        if !ldap.initialize("ldap://localhost:389") { panic!("GGNet's LDAP Initialization failed!!") }
 
         ldap.set_option();
 
         if !ldap.simple_bind("cn=admin,dc=ad,dc=ggnet", "DidRPwfLDAP!") { panic!("GGNet's LDAP binding failed!") }
 
         GGNet { ldap: Arc::new(Mutex::new(ldap)) }
+    }
+
+    // Check password for user (DOES NOT CHECK IF USER EXISTS)
+    pub fn check_password(&self, username: &str, password: &str) -> bool
+    {
+        // TODO Change this to use libsasl bindings instead of a command builder
+        let output = Command::new("/usr/sbin/testsaslauthd").args(&["-u", username, "-p", password]).output().unwrap_or_else(|e| { panic!("Failed to execute `testsaslauthd`: {}", e) });
+
+        // `testsaslauthd` will return one of two options:
+        // '0: OK ...' on successful authentication 
+        // OR
+        // '0: NO ...' on failed authentication
+        // So we only check if the third character is 'O'. Done.
+        output.stdout[3] == 79 // ASCII 79 == 'O'
     }
 
     pub fn user_exists(&mut self, username: &str) -> bool
@@ -127,6 +143,22 @@ mod tests
         let mut ggconn = GGNet::new();
 
         assert!(ggconn.user_exists("testuser"));
+    }
+
+    #[test]
+    fn testuser_password()
+    {
+        let ggconn = GGNet::new();
+
+        assert!(ggconn.check_password("testuser", "testpasswd"));
+    }
+
+    #[test]
+    fn testuser_wrong_password()
+    {
+        let ggconn = GGNet::new();
+
+        assert!(!ggconn.check_password("testuser", "wrongpassword"));
     }
 
     #[test]
