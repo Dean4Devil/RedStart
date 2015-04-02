@@ -5,6 +5,8 @@ use iron::typemap::Key;
 
 use cookie::Cookie;
 
+use api::API;
+
 use session::{Session, Store, SessionStore};
 
 /// This Struct sets Cookies on outgoing Responses as necessary.
@@ -16,9 +18,9 @@ pub struct CookieSetter
 
 impl CookieSetter
 {
-    pub fn new(sessionstore: Store) -> CookieSetter
+    pub fn new(api: &API) -> CookieSetter
     {
-        CookieSetter { sessionstore: sessionstore }
+        CookieSetter { sessionstore: api.sessions.clone() }
     }
 }
 

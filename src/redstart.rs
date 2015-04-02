@@ -19,13 +19,23 @@ use cookiesetter::CookieReq;
 pub struct RedStart
 {
     api: API,
+    reservation: Reservation,
+    user: User,
 }
 
 impl RedStart
 {
-    pub fn new(api: API) -> RedStart
+    pub fn new(api: &API) -> RedStart
     {
-        RedStart { api: api }
+        let reservation = Reservation::new();
+        let user = User::new(api.clone());
+
+        RedStart
+        {
+            api: api.clone(),
+            reservation: reservation,
+            user: user,
+        }
     }
 }
 
@@ -34,14 +44,11 @@ impl Handler for RedStart
 {
     fn handle(&self, req: &mut Request) -> IronResult<Response>
     {
-        let reservation = Reservation::new();
-        let user = User::new(self.api.clone());
-
         let ext_url: [String; 2] = req.extensions.remove::<URL>().unwrap(); // If this panics, URLParser has a bug! :D
         let mut res: Response = match ext_url[0].as_slice()
         {
-            "reservation" => { reservation.call(ext_url[1].as_slice(), req) },
-            "user" => { user.call(ext_url[1].as_slice(), req) },
+            "reservation" => { self.reservation.call(ext_url[1].as_slice(), req) },
+            "user" => { self.user.call(ext_url[1].as_slice(), req) },
             _ =>
             {
                 let body: Box<Reader + Send> = Box::new("".as_bytes());

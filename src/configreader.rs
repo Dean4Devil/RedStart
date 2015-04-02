@@ -49,7 +49,7 @@ impl ConfigReader
                         // There is no config file. So create one.
                         // This opens the file in writeable mode.
                         let mut fd = File::create(&configpath);
-                        
+
                         // Write default values.
                         fd.write(b"[General]\nname=\"RedStart\"\n\n[Networking]\naddress = \"127.0.0.1\"\nport = 8080\n\n[Logging]\nloglevel = \"NORMAL\"\nlogfile = \"log/default.log\"\n\n[Security]\nhttps = false\ncertificate = \"../../ssl/cert.pem\"\nkey = \"../../ssl/key.pem\"\n"
 );
@@ -74,7 +74,6 @@ impl ConfigReader
             Some(val) => val,
             None => panic!("Configfile parse error! Check config syntax!"),
         };
-        println!("{:?}", table);
 
         // Save the BTreeMap into the struct
         let value: Value = Value::Table(table);

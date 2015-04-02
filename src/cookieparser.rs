@@ -3,6 +3,7 @@ use iron::BeforeMiddleware;
 use iron::status;
 use iron::headers::Cookie as CookieHeader;
 
+use api::API;
 use authentication::Authentication::AuthError;
 use session::{Session, Store, SessionStore};
 
@@ -14,9 +15,9 @@ pub struct CookieParser
 
 impl CookieParser
 {
-    pub fn new(sessionstore: Store) -> CookieParser
+    pub fn new(api: &API) -> CookieParser
     {
-        CookieParser { sessionstore: sessionstore }
+        CookieParser { sessionstore: api.sessions.clone() }
     }
 }
 

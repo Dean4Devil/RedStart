@@ -17,41 +17,41 @@ pub struct User
 }
 impl User
 {
-	pub fn new(api: API) -> User
-	{
-		User { api: api }
-	}
+    pub fn new(api: API) -> User
+    {
+        User { api: api }
+    }
 
-	pub fn call(&self, model: &str, req: &mut Request) -> Response
-	{
+    pub fn call(&self, model: &str, req: &mut Request) -> Response
+    {
         // The Store is a Arc so no problem cloning it.
         let login = Login::new(self.api.sessions.clone());
         let logout = Logout::new(self.api.sessions.clone());
         let mut list = List::new(self.api.ggnet.clone());
 
         let body: Box<Reader + Send>;
-		let (status, body) = match model
-		{
-			"login" =>
-			{
-				login.call(req)
-			},
-			"logout" =>
-			{
-				logout.call(req)
-			},
+        let (status, body) = match model
+        {
+            "login" =>
+            {
+                login.call(req)
+            },
+            "logout" =>
+            {
+                logout.call(req)
+            },
             "list" =>
             {
                 list.call(req)
             }
-			_ =>
-			{
-				(status::NotFound, "".to_string())
-			},
-		};
+            _ =>
+            {
+                (status::NotFound, "".to_string())
+            },
+        };
 
         Response::new().set(status).set(body)
-	}
+    }
 }
 
 struct Login
@@ -66,7 +66,9 @@ impl Login
     }
     pub fn call(&self, req: &mut Request) -> (Status, String)
     {
-        if req.body.read_to_string().unwrap() == "username=testuser&password=testpass"
+        let req_string = req.body.read_to_string().unwrap();
+        println!("{}", req_string);
+        if  req_string == "username=testuser&password=testpass"
         {
             // Username + password "valid"
             let mut rgen = OsRng::new().unwrap();
@@ -122,7 +124,7 @@ impl List
     }
     pub fn call(&mut self, req: &mut Request) -> (Status, String)
     {
-        let res_vec = self.ggnet.get_users("");
+        let res_vec = self.ggnet.get_users("*");
         let res_json = res_vec.to_json();
 
         (status::Ok, json::encode(&res_vec).unwrap())

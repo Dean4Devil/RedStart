@@ -45,9 +45,9 @@ mod redstart;
 fn setup() -> (API, iron::Chain)
 {
     let mut api = API::new();
-    let redstart = RedStart::new(api.clone());
-    let cookieparser = CookieParser::new(api.sessions.clone());
-    let cookesetter = CookieSetter::new(api.sessions.clone());
+    let redstart = RedStart::new(&api);
+    let cookieparser = CookieParser::new(&api);
+    let cookesetter = CookieSetter::new(&api);
     let mut chain = Chain::new(redstart);
     chain.link_before(URLParser);
     chain.link_before(cookieparser);
@@ -64,7 +64,9 @@ fn main()
 
     let addr: IpAddr = api.config.get_value_or::<String>("Networking.address", "localhost".to_string()).parse().unwrap();
     let port = api.config.get_value_or::<u16>("Networking.port", 3000);
-    let sock_addr = SocketAddr { ip: addr, port: port };
+    let sock_addr = SocketAddr { ip: addr, port: port.clone() };
+
+    let guards;
 
     // Is HTTPS enabled?
     if api.config.get_value_or::<bool>("Security.https", false)
@@ -82,13 +84,15 @@ fn main()
         key_path.push(key_conf);
 
         // Start up Iron in HTTPS mode
-        Iron::new(chain).https(sock_addr, cert_path, key_path).unwrap();
+        guards = Iron::new(chain).https(sock_addr, cert_path, key_path).unwrap();
     }
     else
     {
         // If no, start up Iron in HTTP mode.
-        Iron::new(chain).http(sock_addr).unwrap();
+        guards = Iron::new(chain).http(sock_addr).unwrap();
     }
+
+    println!("Started RedStart on port {}", port);
 }
 
 

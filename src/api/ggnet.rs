@@ -22,7 +22,7 @@ impl GGNet
     {
         let mut ldap = ldap::LDAP::new();
         // TODO Replace this with some proper error checking
-        if !ldap.initialize("ldap://localhost:389") { panic!("GGNet's LDAP Initialization failed!!") }
+        if !ldap.initialize("ldap://localhost:3890") { panic!("GGNet's LDAP Initialization failed!!") }
 
         ldap.set_option();
 
@@ -50,7 +50,7 @@ impl GGNet
         // We grab the lock with (*self.ldap) because Arc acts like a pointer
         let mut ld = (*self.ldap).lock().unwrap();
 
-        let mut searchstring = "(&(cn=$)(objectClass=person))".replace("$", username);
+        let mut searchstring = "(&(cn=username)(objectClass=person))".replace("username", username);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
         let result = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "uidNumber"], 0);
         if result.is_none() { return false; }
@@ -64,7 +64,7 @@ impl GGNet
         // We grab the lock with (*self.ldap) because Arc acts like a pointer
         let mut ld = (*self.ldap).lock().unwrap();
 
-        let mut searchstring = "(&(cn=$)(objectClass=gruppe))".replace("$", groupname);
+        let mut searchstring = "(&(cn=groupname)(objectClass=gruppe))".replace("groupname", groupname);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
         let result = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "displayName", "gidNumber"], 0);
 
@@ -79,7 +79,7 @@ impl GGNet
         // Grab the lock
         let mut ld = (*self.ldap).lock().unwrap();
 
-        let mut searchstring = "(&(cn=$)(objectClass=person))".replace("$", filter);
+        let mut searchstring = "(&(cn=username)(objectClass=person))".replace("username", filter);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
         let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "uidNumber"], 0);
 
@@ -94,10 +94,10 @@ impl GGNet
             if entry_o.is_none() { break; }
             let mut entry = entry_o.unwrap();
             if entry.is_null() { break; }
-            
+
             // get_values returns a vector. We only want the first element.
             users.push(entry.get_values(&mut ld, "cn")[0].clone());
-            
+
             entry_o = entry.next_entry(&mut ld);
         }
 
@@ -122,10 +122,10 @@ impl GGNet
         {
             if entry_o.is_none() { break; }
             let mut entry = entry_o.unwrap();
-            
+
             // get_values returns a vector. We only want the first element.
             groups.push(entry.get_values(&mut ld, "cn")[0].clone());
-            
+
             entry_o = entry.next_entry(&mut ld);
         }
 
@@ -193,15 +193,6 @@ impl GGNet
         &dn[3..splitter]
     }
 }
-
-impl Drop for GGNet
-{
-    fn drop(&mut self)
-    {
-        (*self.ldap).lock().unwrap().unbind();
-    }
-}
-
 
 #[cfg(test)]
 mod tests
