@@ -8,6 +8,7 @@ use std::sync::Mutex;
 use std::process::Command;
 
 #[derive(Clone)]
+/// The GGNet Struct provides function that connect with Samba in terms of LDAP and SASL
 pub struct GGNet
 {
     // To keep the API as thread-safe as possible we hide the LDAP connection behind a Mutex.

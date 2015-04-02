@@ -3,6 +3,7 @@ use iron::typemap::Key;
 
 mod storage;
 
+/// Session struct. This represents the data that is passed around as Session.
 pub struct Session
 {
     pub key: String,
@@ -24,8 +25,10 @@ impl Clone for Session
     }
 }
 
+/// This struct is an abstraction that allows for implementation-agnostic Session stores
 pub struct Store
 {
+    // This Implementation of a Sessionstore is opaque
     engine: storage::Memory,
 }
 impl Store

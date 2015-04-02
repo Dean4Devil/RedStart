@@ -1,4 +1,5 @@
 use iron::prelude::*;
+
 use iron::AfterMiddleware;
 
 /// The logger struct

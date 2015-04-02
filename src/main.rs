@@ -38,6 +38,10 @@ mod urlparser;
 mod session;
 mod redstart;
 
+/// The setup function
+///
+/// This function sets up the environment needed for RedStart's main loop to function.
+/// The main work this function does is building the chain and populating the API.
 fn setup() -> (API, iron::Chain)
 {
     let mut api = API::new();
@@ -51,31 +55,48 @@ fn setup() -> (API, iron::Chain)
     return (api, chain);
 }
 
+/// The main function
+///
+/// This is the main loop of RedStart
 fn main()
 {
     let (mut api, chain) = setup();
+
     let addr: IpAddr = api.config.get_value_or::<String>("Networking.address", "localhost".to_string()).parse().unwrap();
     let port = api.config.get_value_or::<u16>("Networking.port", 3000);
     let sock_addr = SocketAddr { ip: addr, port: port };
 
+    // Is HTTPS enabled?
     if api.config.get_value_or::<bool>("Security.https", false)
     {
+        // If yes, get two paths located at the current pwd.
         let mut cert_path = os::self_exe_path().unwrap();
         let mut key_path = cert_path.clone();
+
+        // Get the location of the Certificate file.
         let cert_conf = api.config.get_value_or::<String>("Security.certificate", "snakeoil.key".to_string());
         cert_path.push(cert_conf);
+
+        // Get the location of the Key file.
         let key_conf = api.config.get_value_or::<String>("Security.key", "snakeoil.cert".to_string());
         key_path.push(key_conf);
 
+        // Start up Iron in HTTPS mode
         Iron::new(chain).https(sock_addr, cert_path, key_path).unwrap();
     }
     else
     {
+        // If no, start up Iron in HTTP mode.
         Iron::new(chain).http(sock_addr).unwrap();
     }
 }
 
+
 #[cfg(test)]
+/// Test module
+///
+/// This module only gets compiled in test mode.
+/// It provides mostly helper functions for other unit tests.
 mod tests
 {
     use super::*;
@@ -88,6 +109,7 @@ mod tests
     use iron::request::Body;
     use iron::method::Method;
     use iron::TypeMap;
+
     pub fn create_fake_request(method: Method, url: &str) // -> Request
     {
         let addr: IpAddr = "localhost".parse().unwrap();
