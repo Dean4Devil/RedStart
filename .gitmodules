@@ -1,3 +1,6 @@
 [submodule "lib/libldap"]
 	path = lib/libldap
 	url = https://github.com/Dean4Devil/rust-ldap.git
+[submodule "lib/libsasl"]
+	path = lib/libsasl
+	url = https://github.com/Dean4Devil/rust-sasl.git
