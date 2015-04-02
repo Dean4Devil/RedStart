@@ -44,16 +44,16 @@ fn setup() -> (API, iron::Chain)
     let redstart = RedStart::new(api.clone());
     let cookieparser = CookieParser::new(api.sessions.clone());
     let cookesetter = CookieSetter::new(api.sessions.clone());
-	let mut chain = Chain::new(redstart);
-	chain.link_before(URLParser);
-	chain.link_before(cookieparser);
+    let mut chain = Chain::new(redstart);
+    chain.link_before(URLParser);
+    chain.link_before(cookieparser);
     chain.link_after(cookesetter);
-	return (api, chain);
+    return (api, chain);
 }
 
 fn main()
 {
-	let (mut api, chain) = setup();
+    let (mut api, chain) = setup();
     let addr: IpAddr = api.config.get_value_or::<String>("Networking.address", "localhost".to_string()).parse().unwrap();
     let port = api.config.get_value_or::<u16>("Networking.port", 3000);
     let sock_addr = SocketAddr { ip: addr, port: port };
@@ -67,7 +67,7 @@ fn main()
         let key_conf = api.config.get_value_or::<String>("Security.key", "snakeoil.cert".to_string());
         key_path.push(key_conf);
 
-	    Iron::new(chain).https(sock_addr, cert_path, key_path).unwrap();
+        Iron::new(chain).https(sock_addr, cert_path, key_path).unwrap();
     }
     else
     {

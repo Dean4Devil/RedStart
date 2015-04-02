@@ -5,7 +5,7 @@ mod storage;
 
 pub struct Session
 {
-	pub key: String,
+    pub key: String,
     pub username: String,
 }
 impl Session
