@@ -13,6 +13,7 @@ extern crate ldap;
 
 //use std::error::Error;
 use std::os;
+use std::thread;
 use std::path::PathBuf;
 use std::old_io::net::ip::{SocketAddr, IpAddr};
 
@@ -66,7 +67,7 @@ fn main()
     let port = api.config.get_value_or::<u16>("Networking.port", 3000);
     let sock_addr = SocketAddr { ip: addr, port: port.clone() };
 
-    let guards;
+    let guards; // JoinGuards that will make sure the child processes don't get dropped when the main thread is finished.
 
     // Is HTTPS enabled?
     if api.config.get_value_or::<bool>("Security.https", false)
