@@ -1,21 +1,21 @@
-#![allow(unstable_features)]
 #![allow(non_snake_case)]
-// Since both ConfigReader and Logger are not functional yet allow dead code.
+// TODO: Remove the need for this compilation attribute.
 #![allow(dead_code)]
-#![feature(core,old_io,old_path)]
 extern crate iron;
 extern crate hyper;
 extern crate url;
-extern crate "rustc-serialize" as serialize;
 extern crate toml;
 extern crate cookie;
 extern crate ldap;
+extern crate rustc_serialize as serialize;
+extern crate rand;
 
 //use std::error::Error;
 use std::os;
+use std::env;
 use std::thread;
 use std::path::PathBuf;
-use std::old_io::net::ip::{SocketAddr, IpAddr};
+use std::net::{SocketAddrV4, Ipv4Addr};
 
 use iron::prelude::*;
 //use iron::AroundMiddleware;
@@ -63,9 +63,9 @@ fn main()
 {
     let (mut api, chain) = setup();
 
-    let addr: IpAddr = api.config.get_value_or::<String>("Networking.address", "localhost".to_string()).parse().unwrap();
+    let addr: Ipv4Addr = api.config.get_value_or::<String>("Networking.address", "localhost".to_string()).parse().unwrap();
     let port = api.config.get_value_or::<u16>("Networking.port", 3000);
-    let sock_addr = SocketAddr { ip: addr, port: port.clone() };
+    let sock_addr = SocketAddrV4::new(addr, port);
 
     let guards; // JoinGuards that will make sure the child processes don't get dropped when the main thread is finished.
 
@@ -73,7 +73,7 @@ fn main()
     if api.config.get_value_or::<bool>("Security.https", false)
     {
         // If yes, get two paths located at the current pwd.
-        let mut cert_path = os::self_exe_path().unwrap();
+        let mut cert_path = env::current_exe().unwrap();
         let mut key_path = cert_path.clone();
 
         // Get the location of the Certificate file.
@@ -108,26 +108,26 @@ mod tests
 
     use std::old_io::util::NullReader;
     use std::old_io::net::ip::{SocketAddr, IpAddr};
-    use hyper::http::HttpReader::EmptyReader;
+    use hyper::http::HttpReader;
     use iron::request::{Request, Url};
     use iron::headers::Headers;
     use iron::request::Body;
     use iron::method::Method;
     use iron::TypeMap;
 
-    pub fn create_fake_request(method: Method, url: &str) // -> Request
+    pub fn create_fake_request(method: Method, url: &str) -> Request
     {
         let addr: IpAddr = "localhost".parse().unwrap();
-        /* Request
+        Request
         {
             url: Url::parse(url).unwrap(),
             remote_addr: SocketAddr { ip: addr, port: 8123 },
             local_addr: SocketAddr { ip: addr, port: 3000 },
             headers: Headers::new(),
-            body: Body::new(EmptyReader(MockStream::new())),
+            body: Body::new(HttpReader::EmptyReader::<NullReader>::new()),
             method: Method::Get,
             extensions: TypeMap::new()
-        } */
+        }
     }
 }
 

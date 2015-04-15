@@ -1,3 +1,5 @@
+// TODO Delete this.
+
 pub trait Model
 {
     fn new() -> Self;

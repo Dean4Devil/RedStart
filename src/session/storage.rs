@@ -98,7 +98,6 @@ mod tests
     }
 
     #[test]
-    #[should_fail]
     fn put_del_get()
     {
         let key = "testkey".to_string();
@@ -106,16 +105,17 @@ mod tests
         let store = Memory::new();
         store.put(&key, session.clone());
         store.del(&key);
-        let session2 = store.get(&key).unwrap();
+        let session2 = store.get(&key);
+        assert_eq!(session2, None)
     }
 
     #[test]
-    #[should_fail]
     fn get()
     {
         let key = "testkey".to_string();
         let store = Memory::new();
-        let session = store.get(&key).unwrap();
+        let session = store.get(&key);
+        assert_eq!(session, None)
     }
 }
 

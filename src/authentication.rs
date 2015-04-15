@@ -1,3 +1,5 @@
+// FIXME Dead code!
+
 //! Around Middleware providing Authentication
 //! This Middleware parses incoming requests for cookies and sets cookie headers on responses as necessary
 

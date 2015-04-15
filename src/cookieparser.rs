@@ -31,7 +31,7 @@ impl BeforeMiddleware for CookieParser
             let cookies = req.headers.get::<CookieHeader>().unwrap();
             for cookie in cookies.iter()
             {
-                let result: IronResult<()> = match cookie.name.as_slice()
+                let result: IronResult<()> = match cookie.name.as_ref()
                 {
                     "auth-token" =>
                     {

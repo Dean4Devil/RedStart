@@ -1,3 +1,6 @@
+use std::io::Read;
+use std::convert;
+
 use iron::prelude::*;
 use iron::Handler;
 use iron::status;
@@ -45,13 +48,13 @@ impl Handler for RedStart
     fn handle(&self, req: &mut Request) -> IronResult<Response>
     {
         let ext_url: [String; 2] = req.extensions.remove::<URL>().unwrap(); // If this panics, URLParser has a bug! :D
-        let mut res: Response = match ext_url[0].as_slice()
+        let mut res: Response = match ext_url[0].as_ref()
         {
-            "reservation" => { self.reservation.call(ext_url[1].as_slice(), req) },
-            "user" => { self.user.call(ext_url[1].as_slice(), req) },
+            "reservation" => { self.reservation.call(ext_url[1].as_ref(), req) },
+            "user" => { self.user.call(ext_url[1].as_ref(), req) },
             _ =>
             {
-                let body: Box<Reader + Send> = Box::new("".as_bytes());
+                let body: Box<Read + Send> = Box::new("".as_bytes());
                 Response::new().set(status::NotFound).set(body)
             },
         };

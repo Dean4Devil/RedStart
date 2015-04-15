@@ -1,3 +1,4 @@
+use std::io::Read;
 use iron::prelude::*;
 use iron::status;
 
@@ -14,7 +15,7 @@ impl Reservation
         let timetable = Timetable::new();
         let reservation = ReservationDisplay::new();
         // Currently statically defined, later pull from request.
-        let body: Box<Reader + Send>;
+        let body: Box<Read + Send>;
         let (status, body) = match model
         {
             "timetable" =>
