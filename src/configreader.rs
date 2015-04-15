@@ -1,6 +1,14 @@
+/*
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0
+ *
+ * © Gregor Reitzenstein, Harald Seiler
+ */
+
 use std::os;
-use std::old_io;
-use std::old_io::{fs, File, IoErrorKind};
+use std::env;
+use std::io::{Write, Read, ErrorKind};
+use std::fs::{self, File};
 use std::collections::BTreeMap;
 use std::sync::mpsc::{Sender, Receiver};
 
@@ -21,40 +29,40 @@ impl ConfigReader
     pub fn new() -> ConfigReader
     {
         // Get the current pwd
-        let curr_dir = os::self_exe_path().expect("huh?");
+        let mut config = env::current_exe().ok().expect("huh?");
 
         // Create the configuration directory if it does not exist yet.
-        let configdir = curr_dir.join("config/");
+        config.push("config/");
 
         //let configdir = Path::new("config/");
         // This returns a Result with an error if the directory already exists or the user does not
         // have write permissions. We ignore that possibility for now.
-        fs::mkdir(&configdir, old_io::USER_RWX);
+        fs::create_dir(&config);
 
         // Open the configuration file.
-        let configpath  = curr_dir.join("config/redstart.toml");
+        config.push("redstart.toml");
         //let configpath  = Path::new("config/redstart.toml");
-        let mut configfile = match File::open(&configpath)
+        let mut configfile = match File::open(&config)
         {
             // File does exists -> return file descriptor.
             Ok(f) => f,
             // File does *not* exist -> create file, dump default config, return file descriptor
             Err(e) =>
             {
-                match e.kind
+                match e.kind()
                 {
-                    IoErrorKind::PermissionDenied => panic!("Could not read config file. Does it have the correct permissions?"),
-                    IoErrorKind::FileNotFound =>
+                    ErrorKind::PermissionDenied => panic!("Could not read config file. Does it have the correct permissions?"),
+                    ErrorKind::NotFound =>
                     {
                         // There is no config file. So create one.
                         // This opens the file in writeable mode.
-                        let mut fd = File::create(&configpath);
+                        let mut fd = File::create(&config).unwrap();
 
                         // Write default values.
                         fd.write(b"[General]\nname=\"RedStart\"\n\n[Networking]\naddress = \"127.0.0.1\"\nport = 8080\n\n[Logging]\nloglevel = \"NORMAL\"\nlogfile = \"log/default.log\"\n\n[Security]\nhttps = false\ncertificate = \"../../ssl/cert.pem\"\nkey = \"../../ssl/key.pem\"\n"
 );
                         // Open the file in readonly mode again
-                        let mut fd = File::open(&configpath);
+                        let mut fd = File::open(&config);
                         fd.unwrap()
                     }
                     _ => panic!("File error: {}!", e),
@@ -63,10 +71,11 @@ impl ConfigReader
         };
 
         // Read the config-file into memory.
-        let configstring = configfile.read_to_string().unwrap();
+        let mut configstring = String::new();
+        configfile.read_to_string(&mut configstring).unwrap();
 
         // Create a new TOML Parser from the config
-        let mut configparser = toml::Parser::new(configstring.as_slice());
+        let mut configparser = toml::Parser::new(configstring.as_ref());
 
         // Parse the TOML configfile into a Binary Tree map.
         let table = match configparser.parse()

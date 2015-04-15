@@ -1,3 +1,10 @@
+/*
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0
+ *
+ * © Gregor Reitzenstein
+ */
+
 use iron::prelude::*;
 use iron::BeforeMiddleware;
 use iron::status;
@@ -31,7 +38,7 @@ impl BeforeMiddleware for CookieParser
             let cookies = req.headers.get::<CookieHeader>().unwrap();
             for cookie in cookies.iter()
             {
-                let result: IronResult<()> = match cookie.name.as_slice()
+                let result: IronResult<()> = match cookie.name.as_ref()
                 {
                     "auth-token" =>
                     {

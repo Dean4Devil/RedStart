@@ -1,3 +1,10 @@
+/*
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0
+ *
+ * © Gregor Reitzenstein
+ */
+
 use iron::prelude::*;
 use iron::AfterMiddleware;
 use iron::headers::SetCookie;
@@ -32,7 +39,9 @@ impl AfterMiddleware for CookieSetter
         if req.extensions.contains::<CookieReq>()
         {
             let cookievalvec: Vec<[String; 2]> = req.extensions.remove::<CookieReq>().unwrap();
-            let cookies: Vec<Cookie> = cookievalvec.into_iter().map(|[x, y]| Cookie::new(x,y)).collect();
+
+            // A Cookie is a slice of two Strings: The key and the associated value
+            let cookies: Vec<Cookie> = cookievalvec.into_iter().map(|x| Cookie::new(x[1].clone(),x[2].clone())).collect();
             res.headers.set(SetCookie(cookies));
         }
         Ok(res)

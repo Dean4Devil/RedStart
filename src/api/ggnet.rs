@@ -1,3 +1,10 @@
+/*
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0
+ *
+ * © Gregor Reitzenstein
+ */
+
 //! This module contains functions that provide the same functionality as ggnpwcheck.inc
 
 use ldap;
@@ -52,7 +59,7 @@ impl GGNet
 
         let mut searchstring = "(&(cn=username)(objectClass=person))".replace("username", username);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
-        let result = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "uidNumber"], 0);
+        let result = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "uidNumber"], 0);
         if result.is_none() { return false; }
 
         let mut entry = result.unwrap().first_entry(&mut ld);
@@ -66,7 +73,7 @@ impl GGNet
 
         let mut searchstring = "(&(cn=groupname)(objectClass=gruppe))".replace("groupname", groupname);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
-        let result = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "displayName", "gidNumber"], 0);
+        let result = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "displayName", "gidNumber"], 0);
 
         if result.is_none() { return false; }
 
@@ -81,7 +88,7 @@ impl GGNet
 
         let mut searchstring = "(&(cn=username)(objectClass=person))".replace("username", filter);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
-        let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "uidNumber"], 0);
+        let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "uidNumber"], 0);
 
         if result_o.is_none() { return Vec::new(); }
         let mut result = result_o.unwrap();
@@ -111,7 +118,7 @@ impl GGNet
 
         let mut searchstring = "(&(cn=$)(objectClass=gruppe))".replace("$", filter);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
-        let mut result_o = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "gidNumber"], 0);
+        let mut result_o = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "gidNumber"], 0);
 
         if result_o.is_none() { return Vec::new(); }
         let mut result = result_o.unwrap();
@@ -139,7 +146,7 @@ impl GGNet
         let mut ld = (*self.ldap).lock().unwrap();
 
         let mut searchstring = "(&(cn=$)(objectClass=gruppe))".replace("$", groupname);
-        let mut result_o = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "member"], 0);
+        let mut result_o = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "member"], 0);
 
         if result_o.is_none() { return Vec::new(); }
         let mut result = result_o.unwrap();
@@ -148,7 +155,7 @@ impl GGNet
         if group_o.is_none() { return Vec::new(); }
         let mut group = group_o.unwrap();
 
-        group.get_values(&mut ld, "member").iter().map(|x| GGNet::get_cn_from_dn(x.as_slice()).to_string()).collect::<Vec<String>>()
+        group.get_values(&mut ld, "member").iter().map(|x| GGNet::get_cn_from_dn(x.as_ref()).to_string()).collect::<Vec<String>>()
     }
 
     pub fn get_users_groups(&mut self, username: &str) -> Vec<String>
@@ -158,7 +165,7 @@ impl GGNet
         let mut ld = (*self.ldap).lock().unwrap();
 
         let mut searchstring = "(&(cn=$)(objectClass=person))".replace("$", username);
-        let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "memberOf"], 0);
+        let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "memberOf"], 0);
 
         if result_o.is_none() { return Vec::new(); }
         let mut result = result_o.unwrap();
@@ -167,7 +174,7 @@ impl GGNet
         if user_o.is_none() { return Vec::new(); }
         let mut user = user_o.unwrap();
 
-        user.get_values(&mut ld, "memberOf").iter().map(|x| GGNet::get_cn_from_dn(x.as_slice()).to_string()).collect::<Vec<String>>()
+        user.get_values(&mut ld, "memberOf").iter().map(|x| GGNet::get_cn_from_dn(x.as_ref()).to_string()).collect::<Vec<String>>()
     }
 
     pub fn is_in_group(&mut self, username: &str, groupname: &str) -> bool
@@ -177,7 +184,7 @@ impl GGNet
         let mut ld = (*self.ldap).lock().unwrap();
 
         let mut searchstring = "(&(objectClass=person)(cn={user})(memberOf=cn={group},ou=Gruppen,dc=ad,dc=ggnet))".replace("{user}", username).replace("{group}", groupname);
-        let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_slice(), &["cn", "memberOf"], 0);
+        let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "memberOf"], 0);
 
         if result_o.is_none() { return false; }
         let mut result = result_o.unwrap();

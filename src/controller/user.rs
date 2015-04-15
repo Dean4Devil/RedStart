@@ -1,4 +1,12 @@
-use std::rand::{Rng, OsRng};
+/*
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0
+ *
+ * © Gregor Reitzenstein
+ */
+
+use std::io::Read;
+use rand::Rng;
 
 use serialize::json;
 use serialize::Encodable;
@@ -29,7 +37,7 @@ impl User
         let logout = Logout::new(self.api.sessions.clone());
         let mut list = List::new(self.api.ggnet.clone());
 
-        let body: Box<Reader + Send>;
+        let body: Box<Read + Send>;
         let (status, body) = match model
         {
             "login" =>
@@ -66,14 +74,25 @@ impl Login
     }
     pub fn call(&self, req: &mut Request) -> (Status, String)
     {
-        let req_string = req.body.read_to_string().unwrap();
-        println!("{}", req_string);
+        let mut req_string = String::new();
+        req.body.read_to_string(&mut req_string).unwrap();
+
+        if cfg!(cfg = "debug")
+        {
+            println!("{}", req_string);
+        }
+
         if  req_string == "username=testuser&password=testpass"
         {
             // Username + password "valid"
-            let mut rgen = OsRng::new().unwrap();
-            let session_key = rgen.gen_ascii_chars().take(30).collect::<String>();
-            println!("{}", session_key);
+            //let mut rng = rand::thread_rnd();
+
+            let session_key = "123456".to_string();
+            //if cfg!("debug")
+            //{
+                println!("{}", session_key);
+            //}
+
             let session = Session::new(session_key.clone(), "testuser".to_string());
             self.sessionstore.put(&session_key, session);
             req.extensions.insert::<CookieReq>(vec![["auth-token".to_string(), session_key]]);
