@@ -1,3 +1,10 @@
+/*
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0
+ *
+ * © Gregor Reitzenstein
+ */
+
 //! This module contains functions that provide the same functionality as ggnpwcheck.inc
 
 use ldap;

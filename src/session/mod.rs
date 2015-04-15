@@ -1,3 +1,10 @@
+/*
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0
+ *
+ * © Gregor Reitzenstein
+ */
+
 //! Session management
 use iron::typemap::Key;
 

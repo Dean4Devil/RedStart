@@ -1,4 +1,12 @@
+/*
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0
+ *
+ * © Gregor Reitzenstein
+ */
+
 //! This module contains all the API sub-modules that are useable by RedStart
+
 use configreader::ConfigReader;
 use session::Store;
 

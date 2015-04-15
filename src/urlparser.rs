@@ -1,3 +1,10 @@
+/*
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0
+ *
+ * © Gregor Reitzenstein, Maximillian Zander
+ */
+
 use iron::prelude::*;
 use iron::BeforeMiddleware;
 use iron::typemap::Key;

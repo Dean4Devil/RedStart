@@ -1,3 +1,16 @@
+#![crate_type = "bin"]
+#![crate_name = "RedStart"]
+
+/*
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0
+ *
+ * © Gregor Reitzenstein, Harald Seiler, Maximillian Zander
+ */
+
+//! The Entry point of RedStart.
+//! This Module contains the 'setup' function and the 'main' function that are run in this order
+
 #![allow(non_snake_case)]
 // TODO: Remove the need for this compilation attribute.
 #![allow(dead_code)]

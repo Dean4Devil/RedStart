@@ -1,3 +1,10 @@
+/*
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0
+ *
+ * © Gregor Reitzenstein, Harald Seiler
+ */
+
 use std::os;
 use std::env;
 use std::io::{Write, Read, ErrorKind};
