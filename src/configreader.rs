@@ -29,7 +29,7 @@ impl ConfigReader
     pub fn new() -> ConfigReader
     {
         // Get the current pwd
-        let mut config = env::current_exe().ok().expect("huh?");
+        let mut config = env::current_dir().ok().expect("huh?");
 
         // Create the configuration directory if it does not exist yet.
         config.push("config/");
