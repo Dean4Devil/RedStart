@@ -1,5 +1,6 @@
 # Ignore Cargo files & directory
 /target
+Cargo.toml
 Cargo.lock
 
 # For all dem people using IDEA for Rust development
@@ -16,3 +17,5 @@ Cargo.lock
 
 # And the config directory
 /config/
+
+tags
