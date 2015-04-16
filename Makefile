@@ -1,4 +1,4 @@
-RC = rustc
+RC = /usr/local/bin/rustc
 OUT_DIR = ./build
 LIB_DIR = ./lib
 
