@@ -19,6 +19,7 @@ use cookie::Cookie;
 
 use controller::Reservation;
 use controller::User;
+use controller::Group;
 
 use api::API;
 use session::Store;
@@ -31,6 +32,7 @@ pub struct RedStart
     api: API,
     reservation: Reservation,
     user: User,
+    group: Group,
 }
 
 impl RedStart
@@ -39,12 +41,14 @@ impl RedStart
     {
         let reservation = Reservation::new();
         let user = User::new(api.clone());
+        let group = Group::new(api.clone());
 
         RedStart
         {
             api: api.clone(),
             reservation: reservation,
             user: user,
+            group: group,
         }
     }
 }
@@ -59,6 +63,7 @@ impl Handler for RedStart
         {
             "reservation" => { self.reservation.call(ext_url[1].as_ref(), req) },
             "user" => { self.user.call(ext_url[1].as_ref(), req) },
+            "group" => { self.group.call(ext_url[1].as_ref(), req) },
             _ =>
             {
                 let body: Box<Read + Send> = Box::new("".as_bytes());
