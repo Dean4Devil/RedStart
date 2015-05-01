@@ -22,6 +22,7 @@ extern crate cookie;
 extern crate ldap;
 extern crate rustc_serialize as serialize;
 extern crate rand;
+extern crate mysql;
 
 //use std::error::Error;
 use std::os;
@@ -44,6 +45,7 @@ use redstart::RedStart;
 mod api;
 mod authentication;
 mod controller;
+mod data;
 mod model;
 mod configreader;
 mod cookiesetter;

@@ -9,6 +9,7 @@
 
 use configreader::ConfigReader;
 use session::Store;
+use data::MySQL;
 
 pub use self::ggnet::GGNet;
 
@@ -20,6 +21,7 @@ pub struct API
     pub config: ConfigReader,
     pub sessions: Store,
     pub ggnet: GGNet,
+    pub mysql: MySQL,
 }
 
 impl API
@@ -31,6 +33,7 @@ impl API
             config: ConfigReader::new(),
             sessions: Store::new(),
             ggnet: GGNet::new(),
+            mysql: MySQL::new(),
         }
     }
 }
