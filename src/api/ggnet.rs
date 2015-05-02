@@ -14,6 +14,8 @@ use std::sync::Mutex;
 
 use std::process::Command;
 
+use configreader::ConfigReader;
+
 #[derive(Clone)]
 /// The GGNet Struct provides function that connect with Samba in terms of LDAP and SASL
 pub struct GGNet
@@ -25,15 +27,19 @@ pub struct GGNet
 
 impl GGNet
 {
-    pub fn new() -> GGNet
+    pub fn new(config: &mut ConfigReader) -> GGNet
     {
         let mut ldap = ldap::LDAP::new();
-        // TODO Replace this with some proper error checking
-        if !ldap.initialize("ldap://localhost:3890") { panic!("GGNet's LDAP Initialization failed!!") }
+
+        let mut connectstring = "ldap://address:port"
+            .replace("address", config.get_value_or::<String>("LDAP.address", "localhost".to_string()).as_ref())
+            .replace("port", config.get_value_or::<String>("LDAP.port", "389".to_string()).as_ref());
+
+        if !ldap.initialize(connectstring.as_ref()) { panic!("GGNet's LDAP Initialization failed!!") }
 
         ldap.set_option();
 
-        if !ldap.simple_bind("cn=admin,dc=ad,dc=ggnet", "DidRPwfLDAP!") { panic!("GGNet's LDAP binding failed!") }
+        if !ldap.simple_bind("cn=admin,dc=ad,dc=ggnet", config.get_value_or::<String>("LDAP.password","DidRPwfLDAP!".to_string()).as_ref()) { panic!("GGNet's LDAP binding failed!") }
 
         GGNet { ldap: Arc::new(Mutex::new(ldap)) }
     }

@@ -69,7 +69,7 @@ impl BeforeMiddleware for CookieParser
                 }
             }
         }
-        
+
         // Even if not the request is still valid, so pass on.
         Ok(())
     }
