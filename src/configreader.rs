@@ -59,7 +59,7 @@ impl ConfigReader
                         let mut fd = File::create(&config).unwrap();
 
                         // Write default values.
-                        fd.write(b"[General]\nname=\"RedStart\"\n\n[Networking]\naddress = \"127.0.0.1\"\nport = 8080\n\n[Logging]\nloglevel = \"NORMAL\"\nlogfile = \"log/default.log\"\n\n[Security]\nhttps = false\ncertificate = \"../../ssl/cert.pem\"\nkey = \"../../ssl/key.pem\"\n"
+                        fd.write(b"[General]\nname=\"RedStart\"\n\n[Networking]\naddress = \"127.0.0.1\"\nport = 8080\n\n[Logging]\nloglevel = \"NORMAL\"\nlogfile = \"log/default.log\"\n\n[Security]\nhttps = false\ncertificate = \"../../ssl/cert.pem\"\nkey = \"../../ssl/key.pem\"\n\n[MySQL]\nusername = \"root\"\npassword = \"DidRPwfMySQL\"\naddress = \"127.0.0.1\"\nport = 3306\n\n[LDAP]\naddress = \"localhost\"\nport = \"389\"\npassword = \"DidRPwfLDAP!\"\n"
 );
                         // Open the file in readonly mode again
                         let mut fd = File::open(&config);

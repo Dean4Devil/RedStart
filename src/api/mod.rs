@@ -28,12 +28,15 @@ impl API
 {
     pub fn new() -> API
     {
+        let mut config = ConfigReader::new();
+        let mut mysql = MySQL::new(&mut config);
+        let mut ggnet = GGNet::new(&mut config);
         API
         {
-            config: ConfigReader::new(),
+            config: config,
             sessions: Store::new(),
-            ggnet: GGNet::new(),
-            mysql: MySQL::new(),
+            ggnet: ggnet,
+            mysql: mysql,
         }
     }
 }
