@@ -7,6 +7,8 @@
 
 pub use self::reservation::Reservation;
 pub use self::user::User;
+pub use self::group::Group;
 
 mod reservation;
 mod user;
+mod group;
