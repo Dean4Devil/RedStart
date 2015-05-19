@@ -11,6 +11,7 @@ use iron::typemap::Key;
 mod storage;
 
 /// Session struct. This represents the data that is passed around as Session.
+#[derive(Debug)]
 pub struct Session
 {
     pub key: String,

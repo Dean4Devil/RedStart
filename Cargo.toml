@@ -1,0 +1,60 @@
+[package]
+name = "RedStart"
+version = "0.0.9"
+authors = [
+	"Gregor Reitzenstein <dean4devil@paranoidlabs.org>",
+	"Harald Seiler <h.w.seiler@gmx.de>",
+	"Maximilian Zander <zandemax@zandemax.de>"
+]
+
+
+[dependencies]
+hyper = "=0.5.0"
+iron = "=0.1.17"
+url = "=0.2.34"
+rustc-serialize = "=0.3.14"
+rand = "=0.3.8"
+toml = "=0.1.20"
+cookie = "=0.1.20"
+ldap = "=0.0.1"
+mysql = "=0.13.0"
+
+
+# Exact versions of libraries that are know to work:
+# (If you get compilation errors, try specifing explicitly)
+# rustc-serialize v0.3.14
+# debug-builders v0.1.0
+# typeable v0.1.1
+# modifier v0.1.0
+# regex v0.1.30
+# traitobject v0.0.3
+# bitflags v0.1.1
+# lazy_static v0.1.10
+# httparse v0.1.2
+# traitobject v0.0.1
+# libc v0.1.8
+# gcc v0.3.5
+# matches v0.1.2
+# unicase v0.1.0
+# byteorder v0.3.9
+# pkg-config v0.3.4
+# error v0.1.7
+# unsafe-any v0.4.1
+# ldap v0.0.1
+# log v0.3.1
+# num_cpus v0.2.5
+# unix_socket v0.3.2
+# time v0.1.25
+# typemap v0.3.2
+# openssl-sys v0.6.2
+# mime v0.0.11
+# plugin v0.2.6
+# url v0.2.34
+# toml v0.1.20
+# conduit-mime-types v0.7.3
+# openssl v0.6.2
+# cookie v0.1.20
+# mysql v0.13.0
+# hyper v0.5.0
+# iron v0.1.17
+# rand v0.3.8
