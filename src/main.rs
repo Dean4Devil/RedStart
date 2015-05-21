@@ -62,7 +62,7 @@ mod redstart;
 /// The main work this function does is building the chain and populating the API.
 fn setup() -> (API, iron::Chain)
 {
-    let mut api = API::new();
+    let api = API::new();
     let redstart = RedStart::new(&api);
     let cookieparser = CookieParser::new(&api);
     let cookesetter = CookieSetter::new(&api);

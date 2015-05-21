@@ -110,3 +110,18 @@ impl ConfigReader
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use toml;
+
+    // Create a mock (fake) ConfigReader for testing purposes
+    pub fn mock() -> ConfigReader
+    {
+        let toml = "[General]\nname=\"RedStart\"\n\n[Networking]\naddress = \"127.0.0.1\"\nport = 8080\n\n[Logging]\nloglevel = \"NORMAL\"\nlogfile = \"log/default.log\"\n\n[Security]\nhttps = false\ncertificate = \"../../ssl/cert.pem\"\nkey = \"../../ssl/key.pem\"\n\n[MySQL]\nusername = \"root\"\npassword = \"DidRPwfMySQL\"\naddress = \"127.0.0.1\"\nport = 3306\n\n[LDAP]\naddress = \"localhost\"\nport = \"389\"\npassword = \"DidRPwfLDAP!\"\n";
+        let value: toml::Value = toml.parse().unwrap();
+
+        ConfigReader { config_map: value }
+    }
+}

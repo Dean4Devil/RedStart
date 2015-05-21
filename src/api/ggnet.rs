@@ -211,12 +211,14 @@ impl GGNet
 mod tests
 {
     use super::*;
+    use configreader::tests::mock;
 
     #[test]
     fn testuser_exists()
     {
+        let mut cfg = mock();
         // Has to be mutable!
-        let mut ggconn = GGNet::new();
+        let mut ggconn = GGNet::new(&mut cfg);
 
         assert!(ggconn.user_exists("testuser"));
     }
@@ -224,7 +226,8 @@ mod tests
     #[test]
     fn testuser_password()
     {
-        let ggconn = GGNet::new();
+        let mut cfg = mock();
+        let ggconn = GGNet::new(&mut cfg);
 
         assert!(ggconn.check_password("testuser", "testpasswd"));
     }
@@ -232,7 +235,8 @@ mod tests
     #[test]
     fn testuser_wrong_password()
     {
-        let ggconn = GGNet::new();
+        let mut cfg = mock();
+        let ggconn = GGNet::new(&mut cfg);
 
         assert!(!ggconn.check_password("testuser", "wrongpassword"));
     }
@@ -240,7 +244,8 @@ mod tests
     #[test]
     fn listusers()
     {
-        let mut ggconn = GGNet::new();
+        let mut cfg = mock();
+        let ggconn = GGNet::new(&mut cfg);
 
         assert_eq!(ggconn.get_users("*"), vec!["testuser".to_string(), "testuse2".to_string()]);
     }
@@ -248,8 +253,8 @@ mod tests
     // TODO WE NEED TESTDATA!!!
     fn testgroup_exists()
     {
-        // Has to be mutable!
-        let mut ggconn = GGNet::new();
+        let mut cfg = mock();
+        let ggconn = GGNet::new(&mut cfg);
 
         assert!(ggconn.group_exists("testgroup"));
     }
