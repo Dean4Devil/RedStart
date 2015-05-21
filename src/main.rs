@@ -41,6 +41,7 @@ use urlparser::URLParser;
 use cookieparser::CookieParser;
 use cookiesetter::CookieSetter;
 use redstart::RedStart;
+use permissions::Group;
 
 mod api;
 mod authentication;
@@ -52,6 +53,7 @@ mod cookiesetter;
 mod cookieparser;
 mod urlparser;
 mod session;
+mod permissions;
 mod redstart;
 
 /// The setup function
