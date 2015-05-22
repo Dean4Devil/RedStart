@@ -39,7 +39,7 @@ impl GGNet
 
         ldap.set_option();
 
-        if !ldap.simple_bind("cn=admin,dc=ad,dc=ggnet", config.get_value_or::<String>("LDAP.password","DidRPwfLDAP!".to_string()).as_ref()) { panic!("GGNet's LDAP binding failed!") }
+        if !ldap.simple_bind("cn=Administrator,cn=users,dc=ad,dc=ggnet", config.get_value_or::<String>("LDAP.password","DidRPwfLDAP!".to_string()).as_ref()) { panic!("GGNet's LDAP binding failed!") }
 
         GGNet { ldap: Arc::new(Mutex::new(ldap)) }
     }
