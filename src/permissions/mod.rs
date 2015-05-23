@@ -7,8 +7,11 @@
 
 use self::storage::Storage;
 
+pub use self::errors::*;
+
 // Different types of storage (memory, flatfile, db)
 mod storage;
+mod errors;
 
 #[derive(Debug)]
 pub struct Group
@@ -28,7 +31,7 @@ impl Group
         // Get this groups permissions
         let storage = Storage::new();
         let permissions = storage.lookup(name.as_ref());
-        
+
         Group { name: name, permissions: permissions }
     }
 }

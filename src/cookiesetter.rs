@@ -14,20 +14,15 @@ use cookie::Cookie;
 
 use api::API;
 
-use session::{Session, Store, SessionStore};
-
 /// This Struct sets Cookies on outgoing Responses as necessary.
 /// (i.e. For auth-tokens)
-pub struct CookieSetter
-{
-    sessionstore: Store,
-}
+pub struct CookieSetter;
 
 impl CookieSetter
 {
-    pub fn new(api: &API) -> CookieSetter
+    pub fn new(_: &API) -> CookieSetter
     {
-        CookieSetter { sessionstore: api.sessions.clone() }
+        CookieSetter
     }
 }
 

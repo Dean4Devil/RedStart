@@ -13,7 +13,7 @@
 
 #![allow(non_snake_case)]
 // TODO: Remove the need for this compilation attribute.
-#![allow(dead_code)]
+//#![allow(dead_code)]
 extern crate iron;
 extern crate hyper;
 extern crate url;
@@ -25,10 +25,7 @@ extern crate rand;
 extern crate mysql;
 
 //use std::error::Error;
-use std::os;
 use std::env;
-use std::thread;
-use std::path::PathBuf;
 use std::net::{SocketAddrV4, Ipv4Addr};
 
 use iron::prelude::*;
@@ -41,7 +38,6 @@ use urlparser::URLParser;
 use cookieparser::CookieParser;
 use cookiesetter::CookieSetter;
 use redstart::RedStart;
-use permissions::Group;
 
 mod api;
 mod authentication;
@@ -78,6 +74,10 @@ fn setup() -> (API, iron::Chain)
 /// This is the main loop of RedStart
 fn main()
 {
+    // The join guards are "unused", but have a reason!
+    #![allow(unused_variables, unused_assignments)]
+
+
     let (mut api, chain) = setup();
 
     let addr: Ipv4Addr = api.config.get_value_or::<String>("Networking.address", "localhost".to_string()).parse().unwrap();

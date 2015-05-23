@@ -13,7 +13,7 @@ impl Storage
         Storage
     }
 
-    pub fn lookup(&self, groupname: &str) -> Vec<String>
+    pub fn lookup(&self, _: &str) -> Vec<String>
     {
         vec!["some.permission".to_string(), "someother.perm".to_string(), "some.per".to_string()]
     }

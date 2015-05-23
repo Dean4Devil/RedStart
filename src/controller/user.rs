@@ -6,11 +6,8 @@
  */
 
 use std::io::Read;
-use rand::Rng;
 
 use serialize::json;
-use serialize::Encodable;
-use serialize::json::{ToJson,Encoder};
 
 use iron::prelude::*;
 use iron::status::{self, Status};
@@ -37,7 +34,6 @@ impl User
         let logout = Logout::new(self.api.sessions.clone());
         let mut list = List::new(self.api.ggnet.clone());
 
-        let body: Box<Read + Send>;
         let (status, body) = match model
         {
             "login" =>
@@ -141,11 +137,9 @@ impl List
     {
         List { ggnet: ggnet }
     }
-    pub fn call(&mut self, req: &mut Request) -> (Status, String)
+    pub fn call(&mut self, _: &mut Request) -> (Status, String)
     {
         let res_vec = self.ggnet.get_users("*");
-        let res_json = res_vec.to_json();
-
         (status::Ok, json::encode(&res_vec).unwrap())
     }
 }

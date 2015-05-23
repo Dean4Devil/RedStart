@@ -6,7 +6,6 @@
  */
 
 use std::io::Read;
-use std::convert;
 
 use iron::prelude::*;
 use iron::Handler;
@@ -15,21 +14,16 @@ use iron::status;
 use hyper::header::ContentType;
 use hyper::mime;
 
-use cookie::Cookie;
-
 use controller::Reservation;
 use controller::User;
 use controller::Group;
 
 use api::API;
-use session::Store;
 use urlparser::URL;
-use cookiesetter::CookieReq;
 
 /// The main Handler Struct
 pub struct RedStart
 {
-    api: API,
     reservation: Reservation,
     user: User,
     group: Group,
@@ -45,7 +39,6 @@ impl RedStart
 
         RedStart
         {
-            api: api.clone(),
             reservation: reservation,
             user: user,
             group: group,
