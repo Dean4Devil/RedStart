@@ -6,7 +6,7 @@ authors = [
 	"Harald Seiler <h.w.seiler@gmx.de>",
 	"Maximilian Zander <zandemax@zandemax.de>"
 ]
-
+build = "build.rs"
 
 [dependencies]
 hyper = "=0.5.0"

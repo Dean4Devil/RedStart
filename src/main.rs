@@ -52,12 +52,18 @@ mod session;
 mod permissions;
 mod redstart;
 
+macro_rules! dbgprint {
+    ($fmt:expr) => (if cfg!(debug){println!($fmt)});
+    ($fmt:expr, $($arg:tt)*) => (if cfg!(debug){println!($fmt, $($arg)*)});
+}
+
 /// The setup function
 ///
 /// This function sets up the environment needed for RedStart's main loop to function.
 /// The main work this function does is building the chain and populating the API.
 fn setup() -> (API, iron::Chain)
 {
+    dbgprint!("Starting Setup phase");
     let api = API::new();
     let redstart = RedStart::new(&api);
     let cookieparser = CookieParser::new(&api);
@@ -66,6 +72,7 @@ fn setup() -> (API, iron::Chain)
     chain.link_before(URLParser);
     chain.link_before(cookieparser);
     chain.link_after(cookesetter);
+    dbgprint!("Setup has finished");
     return (api, chain);
 }
 
@@ -89,6 +96,7 @@ fn main()
     // Is HTTPS enabled?
     if api.config.get_value_or::<bool>("Security.https", false)
     {
+        dbgprint!("HTTPS is enabled! Setting up...");
         // If yes, get two paths located at the current pwd.
         let mut cert_path = env::current_exe().unwrap();
         let mut key_path = cert_path.clone();
