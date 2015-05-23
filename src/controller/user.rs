@@ -73,10 +73,7 @@ impl Login
         let mut req_string = String::new();
         req.body.read_to_string(&mut req_string).unwrap();
 
-        if cfg!(cfg = "debug")
-        {
-            println!("{}", req_string);
-        }
+        dbgprint!("{}", req_string);
 
         if  req_string == "username=testuser&password=testpass"
         {
@@ -84,10 +81,7 @@ impl Login
             //let mut rng = rand::thread_rnd();
 
             let session_key = "123456".to_string();
-            //if cfg!("debug")
-            //{
-                println!("{}", session_key);
-            //}
+            dbgprint!("{}", session_key);
 
             let session = Session::new(session_key.clone(), "testuser".to_string());
             self.sessionstore.put(&session_key, session);

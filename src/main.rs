@@ -31,7 +31,10 @@ use std::net::{SocketAddrV4, Ipv4Addr};
 use iron::prelude::*;
 //use iron::AroundMiddleware;
 
-//use controller::Reservation;
+macro_rules! dbgprint {
+    ($fmt:expr) => (if cfg!(debug){println!($fmt)});
+    ($fmt:expr, $($arg:tt)*) => (if cfg!(debug){println!($fmt, $($arg)*)});
+}
 
 use api::API;
 use urlparser::URLParser;
@@ -52,10 +55,6 @@ mod session;
 mod permissions;
 mod redstart;
 
-macro_rules! dbgprint {
-    ($fmt:expr) => (if cfg!(debug){println!($fmt)});
-    ($fmt:expr, $($arg:tt)*) => (if cfg!(debug){println!($fmt, $($arg)*)});
-}
 
 /// The setup function
 ///
@@ -118,7 +117,7 @@ fn main()
         guards = Iron::new(chain).http(sock_addr).unwrap();
     }
 
-    println!("Started RedStart on port {}", port);
+    dbgprint!("Started RedStart on port {}", port);
 }
 
 

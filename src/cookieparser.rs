@@ -45,13 +45,13 @@ impl BeforeMiddleware for CookieParser
                         let session = self.sessionstore.get(&cookie.value);
                         if session.is_some()
                         {
-                            println!("Auth-Token is valid!");
+                            dbgprint!("Auth-Token is valid!");
                             req.extensions.insert::<Session>(session.unwrap().key);
                             Ok(())
                         }
                         else
                         {
-                            println!("Auth-token is set but is not valid!");
+                            dbgprint!("Auth-token is set but is not valid!");
                             return Err(IronError::new(AuthError, status::Unauthorized));
                         }
                     },
