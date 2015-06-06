@@ -9,9 +9,9 @@ authors = [
 build = "build.rs"
 
 [dependencies]
-hyper = "=0.5.0"
+hyper = "=0.5.2"
 iron = "=0.1.17"
-url = "=0.2.34"
+url = "=0.2.35"
 rustc-serialize = "=0.3.14"
 rand = "=0.3.8"
 toml = "=0.1.20"
