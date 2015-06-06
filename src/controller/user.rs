@@ -35,7 +35,7 @@ impl Controller for User
         "user"
     }
 
-    fn call(&self, model: &str, req: &mut Request) -> Response
+    fn call(&self, model: Option<String>, req: &mut Request) -> Response
     {
         // The Store is a Arc so no problem cloning it.
         let login = Login::new(self.api.sessions.clone());
@@ -44,17 +44,24 @@ impl Controller for User
 
         let (status, body) = match model
         {
-            "login" =>
+            Some(e) =>
             {
-                login.call(req)
-            },
-            "logout" =>
-            {
-                logout.call(req)
-            },
-            "list" =>
-            {
-                list.call(req)
+                match e.as_ref()
+                {
+                    "login" =>
+                    {
+                        login.call(req)
+                    },
+                    "logout" =>
+                    {
+                        logout.call(req)
+                    },
+                    "list" =>
+                    {
+                        list.call(req)
+                    },
+                    _ => (status::NotFound, "".to_string())
+                }
             }
             _ =>
             {

@@ -34,15 +34,19 @@ impl Controller for Group
         "group"
     }
 
-    fn call(&self, model: &str, req: &mut Request) -> Response
+    fn call(&self, model: Option<String>, req: &mut Request) -> Response
     {
         let mut list = List::new(self.api.ggnet.clone());
 
         let (status, body) = match model
         {
-            "list" =>
+            Some(e) =>
             {
-                list.call(req)
+                match e.as_ref()
+                {
+                    "list" => list.call(req),
+                    _ => (status::NotFound, "".to_string())
+                }
             },
             _ =>
             {

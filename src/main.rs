@@ -69,9 +69,9 @@ fn setup() -> (API, iron::Chain)
 
     // Create Controller Tree
     let mut redstart = RedStart::new(&api);
-    //redstart.add_controller(Box::new(controller::User::new(&api)));
-    //redstart.add_controller(Box::new(controller::Group::new(&api)));
-    redstart.add_controller(Box::new(controller::Reservation::new(&api)));
+    redstart.add_controller(Box::new(controller::User::new(&api)));
+    redstart.add_controller(Box::new(controller::Group::new(&api)));
+    //redstart.add_controller(Box::new(controller::Reservation::new(&api)));
     redstart.finish();
     // Make RedStart unmutable
     let redstart = redstart;

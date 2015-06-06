@@ -28,21 +28,28 @@ impl Controller for Reservation
         "reservation"
     }
 
-    fn call(&self, model: &str, req: &mut Request) -> Response
+    fn call(&self, model: Option<String>, req: &mut Request) -> Response
     {
         let timetable = Timetable::new();
         let reservation = ReservationDisplay::new();
         // Currently statically defined, later pull from request.
         let (status, body) = match model
         {
-            "timetable" =>
+            Some(e) =>
             {
-               timetable.call(req) 
-            },
-            "reservation" =>
-            {
-                reservation.call(req)
-            },
+                match e.as_ref()
+                {
+                    "timetable" =>
+                    {
+                       timetable.call(req) 
+                    },
+                    "reservation" =>
+                    {
+                        reservation.call(req)
+                    },
+                    _ => (status::NotFound, "".to_string())
+                }
+            }
             _ =>
             {
                 (status::NotFound, "".to_string())

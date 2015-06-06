@@ -53,15 +53,16 @@ impl Handler for RedStart
 {
     fn handle(&self, req: &mut Request) -> IronResult<Response>
     {
-        let ext_url: [String; 2] = req.extensions.remove::<URL>().unwrap(); // If this panics, URLParser has a bug! :D
-        let key: &str = ext_url[0].as_ref();
+        let (collection, element, field) = req.extensions.remove::<URL>().unwrap();
+
+        let key: &str = collection.as_ref();
         let resource = self.controller.get(key);
 
         let mut res: Response = match resource
         {
             Some(e) =>
             {
-                (*e).call(ext_url[1].as_ref(), req)
+                (*e).call(element, req)
             },
             None =>
             {
@@ -79,5 +80,5 @@ impl Handler for RedStart
 pub trait Controller
 {
     fn name(&self) -> &'static str;
-    fn call(&self, model: &str, req: &mut Request) -> Response;
+    fn call(&self, model: Option<String>, req: &mut Request) -> Response;
 }
