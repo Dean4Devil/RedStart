@@ -42,6 +42,8 @@ use cookieparser::CookieParser;
 use cookiesetter::CookieSetter;
 use redstart::RedStart;
 
+use controller::{User, Group, Reservation};
+
 mod api;
 mod authentication;
 mod controller;
@@ -64,9 +66,19 @@ fn setup() -> (API, iron::Chain)
 {
     dbgprint!("Starting Setup phase");
     let api = API::new();
-    let redstart = RedStart::new(&api);
+
+    // Create Controller Tree
+    let mut redstart = RedStart::new(&api);
+    //redstart.add_controller(Box::new(controller::User::new(&api)));
+    //redstart.add_controller(Box::new(controller::Group::new(&api)));
+    redstart.add_controller(Box::new(controller::Reservation::new(&api)));
+    redstart.finish();
+    // Make RedStart unmutable
+    let redstart = redstart;
+
     let cookieparser = CookieParser::new(&api);
     let cookesetter = CookieSetter::new(&api);
+
     let mut chain = Chain::new(redstart);
     chain.link_before(URLParser);
     chain.link_before(cookieparser);

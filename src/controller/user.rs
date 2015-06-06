@@ -15,6 +15,7 @@ use iron::status::{self, Status};
 use api::{API, GGNet};
 use session::{Session, Store, SessionStore};
 use cookiesetter::CookieReq;
+use redstart::Controller;
 
 pub struct User
 {
@@ -22,12 +23,19 @@ pub struct User
 }
 impl User
 {
-    pub fn new(api: API) -> User
+    pub fn new(api: &API) -> User
     {
-        User { api: api }
+        User { api: api.clone() }
+    }
+}
+impl Controller for User
+{
+    fn name(&self) -> &'static str
+    {
+        "user"
     }
 
-    pub fn call(&self, model: &str, req: &mut Request) -> Response
+    fn call(&self, model: &str, req: &mut Request) -> Response
     {
         // The Store is a Arc so no problem cloning it.
         let login = Login::new(self.api.sessions.clone());

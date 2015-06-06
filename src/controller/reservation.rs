@@ -8,15 +8,27 @@
 use iron::prelude::*;
 use iron::status;
 
+use api::API;
+use redstart::Controller;
+
 pub struct Reservation;
 
 impl Reservation
 {
-    pub fn new() -> Reservation
+    pub fn new(api: &API) -> Reservation
     {
         Reservation
     }
-    pub fn call(&self, model: &str, req: &mut Request) -> Response
+}
+
+impl Controller for Reservation
+{
+    fn name(&self) -> &'static str
+    {
+        "reservation"
+    }
+
+    fn call(&self, model: &str, req: &mut Request) -> Response
     {
         let timetable = Timetable::new();
         let reservation = ReservationDisplay::new();

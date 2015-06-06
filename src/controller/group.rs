@@ -12,18 +12,29 @@ use iron::status::{self, Status};
 
 use api::{API, GGNet};
 
+use redstart::Controller;
+
 pub struct Group
 {
     api: API,
 }
 impl Group
 {
-    pub fn new(api: API) -> Group
+    pub fn new(api: &API) -> Group
     {
-        Group { api: api }
+        Group { api: api.clone() }
     }
 
-    pub fn call(&self, model: &str, req: &mut Request) -> Response
+}
+
+impl Controller for Group
+{
+    fn name(&self) -> &'static str
+    {
+        "group"
+    }
+
+    fn call(&self, model: &str, req: &mut Request) -> Response
     {
         let mut list = List::new(self.api.ggnet.clone());
 
