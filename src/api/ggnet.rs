@@ -7,6 +7,9 @@
 
 //! This module contains functions that provide the same functionality as ggnpwcheck.inc
 
+// FIXME: Do we need that? Remove as soon as sensible
+#![allow(dead_code)]
+
 use ldap;
 
 use std::sync::Arc;
@@ -31,7 +34,7 @@ impl GGNet
     {
         let mut ldap = ldap::LDAP::new();
 
-        let mut connectstring = "ldap://address:port"
+        let connectstring = "ldap://address:port"
             .replace("address", config.get_value_or::<String>("LDAP.address", "localhost".to_string()).as_ref())
             .replace("port", config.get_value_or::<String>("LDAP.port", "389".to_string()).as_ref());
 
@@ -39,7 +42,7 @@ impl GGNet
 
         ldap.set_option();
 
-        if !ldap.simple_bind("cn=admin,dc=ad,dc=ggnet", config.get_value_or::<String>("LDAP.password","DidRPwfLDAP!".to_string()).as_ref()) { panic!("GGNet's LDAP binding failed!") }
+        if !ldap.simple_bind("cn=Administrator,cn=users,dc=ad,dc=ggnet", config.get_value_or::<String>("LDAP.password","DidRPwfLDAP!".to_string()).as_ref()) { panic!("GGNet's LDAP binding failed!") }
 
         GGNet { ldap: Arc::new(Mutex::new(ldap)) }
     }
@@ -63,12 +66,12 @@ impl GGNet
         // We grab the lock with (*self.ldap) because Arc acts like a pointer
         let mut ld = (*self.ldap).lock().unwrap();
 
-        let mut searchstring = "(&(cn=username)(objectClass=person))".replace("username", username);
+        let searchstring = "(&(cn=username)(objectClass=person))".replace("username", username);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
         let result = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "uidNumber"], 0);
         if result.is_none() { return false; }
 
-        let mut entry = result.unwrap().first_entry(&mut ld);
+        let entry = result.unwrap().first_entry(&mut ld);
         entry.is_some()
     }
 
@@ -77,7 +80,7 @@ impl GGNet
         // We grab the lock with (*self.ldap) because Arc acts like a pointer
         let mut ld = (*self.ldap).lock().unwrap();
 
-        let mut searchstring = "(&(cn=groupname)(objectClass=gruppe))".replace("groupname", groupname);
+        let searchstring = "(&(cn=groupname)(objectClass=gruppe))".replace("groupname", groupname);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
         let result = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "displayName", "gidNumber"], 0);
 
@@ -92,16 +95,15 @@ impl GGNet
         // Grab the lock
         let mut ld = (*self.ldap).lock().unwrap();
 
-        let mut searchstring = "(&(cn=username)(objectClass=person))".replace("username", filter);
+        let searchstring = "(&(cn=username)(objectClass=person))".replace("username", filter);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
-        let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "uidNumber"], 0);
+        let result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "uidNumber"], 0);
 
         if result_o.is_none() { return Vec::new(); }
         let mut result = result_o.unwrap();
 
         let mut users: Vec<String> = Vec::new();
         let mut entry_o = result.first_entry(&mut ld);
-        let mut i: i32 = 0;
         loop
         {
             if entry_o.is_none() { break; }
@@ -122,9 +124,9 @@ impl GGNet
         // Grab the lock
         let mut ld = (*self.ldap).lock().unwrap();
 
-        let mut searchstring = "(&(cn=$)(objectClass=gruppe))".replace("$", filter);
+        let searchstring = "(&(cn=$)(objectClass=gruppe))".replace("$", filter);
         // TODO: Change this to only request the uidNumber when bug https://github.com/Dean4Devil/rust-ldap/issues/1 is fixed.
-        let mut result_o = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "gidNumber"], 0);
+        let result_o = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "gidNumber"], 0);
 
         if result_o.is_none() { return Vec::new(); }
         let mut result = result_o.unwrap();
@@ -151,13 +153,13 @@ impl GGNet
 
         let mut ld = (*self.ldap).lock().unwrap();
 
-        let mut searchstring = "(&(cn=$)(objectClass=gruppe))".replace("$", groupname);
-        let mut result_o = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "member"], 0);
+        let searchstring = "(&(cn=$)(objectClass=gruppe))".replace("$", groupname);
+        let result_o = ld.search("ou=Gruppen,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "member"], 0);
 
         if result_o.is_none() { return Vec::new(); }
         let mut result = result_o.unwrap();
 
-        let mut group_o = result.first_entry(&mut ld);
+        let group_o = result.first_entry(&mut ld);
         if group_o.is_none() { return Vec::new(); }
         let mut group = group_o.unwrap();
 
@@ -170,13 +172,13 @@ impl GGNet
 
         let mut ld = (*self.ldap).lock().unwrap();
 
-        let mut searchstring = "(&(cn=$)(objectClass=person))".replace("$", username);
-        let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "memberOf"], 0);
+        let searchstring = "(&(cn=$)(objectClass=person))".replace("$", username);
+        let result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "memberOf"], 0);
 
         if result_o.is_none() { return Vec::new(); }
         let mut result = result_o.unwrap();
 
-        let mut user_o = result.first_entry(&mut ld);
+        let user_o = result.first_entry(&mut ld);
         if user_o.is_none() { return Vec::new(); }
         let mut user = user_o.unwrap();
 
@@ -189,8 +191,8 @@ impl GGNet
 
         let mut ld = (*self.ldap).lock().unwrap();
 
-        let mut searchstring = "(&(objectClass=person)(cn={user})(memberOf=cn={group},ou=Gruppen,dc=ad,dc=ggnet))".replace("{user}", username).replace("{group}", groupname);
-        let mut result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "memberOf"], 0);
+        let searchstring = "(&(objectClass=person)(cn={user})(memberOf=cn={group},ou=Gruppen,dc=ad,dc=ggnet))".replace("{user}", username).replace("{group}", groupname);
+        let result_o = ld.search("ou=Benutzer,dc=ad,dc=ggnet", 1, searchstring.as_ref(), &["cn", "memberOf"], 0);
 
         if result_o.is_none() { return false; }
         let mut result = result_o.unwrap();
@@ -211,12 +213,14 @@ impl GGNet
 mod tests
 {
     use super::*;
+    use configreader::tests::mock;
 
     #[test]
     fn testuser_exists()
     {
+        let mut cfg = mock();
         // Has to be mutable!
-        let mut ggconn = GGNet::new();
+        let mut ggconn = GGNet::new(&mut cfg);
 
         assert!(ggconn.user_exists("testuser"));
     }
@@ -224,7 +228,8 @@ mod tests
     #[test]
     fn testuser_password()
     {
-        let ggconn = GGNet::new();
+        let mut cfg = mock();
+        let ggconn = GGNet::new(&mut cfg);
 
         assert!(ggconn.check_password("testuser", "testpasswd"));
     }
@@ -232,7 +237,8 @@ mod tests
     #[test]
     fn testuser_wrong_password()
     {
-        let ggconn = GGNet::new();
+        let mut cfg = mock();
+        let ggconn = GGNet::new(&mut cfg);
 
         assert!(!ggconn.check_password("testuser", "wrongpassword"));
     }
@@ -240,7 +246,8 @@ mod tests
     #[test]
     fn listusers()
     {
-        let mut ggconn = GGNet::new();
+        let mut cfg = mock();
+        let ggconn = GGNet::new(&mut cfg);
 
         assert_eq!(ggconn.get_users("*"), vec!["testuser".to_string(), "testuse2".to_string()]);
     }
@@ -248,8 +255,8 @@ mod tests
     // TODO WE NEED TESTDATA!!!
     fn testgroup_exists()
     {
-        // Has to be mutable!
-        let mut ggconn = GGNet::new();
+        let mut cfg = mock();
+        let ggconn = GGNet::new(&mut cfg);
 
         assert!(ggconn.group_exists("testgroup"));
     }

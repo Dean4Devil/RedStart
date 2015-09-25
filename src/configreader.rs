@@ -5,12 +5,9 @@
  * © Gregor Reitzenstein, Harald Seiler
  */
 
-use std::os;
 use std::env;
 use std::io::{Write, Read, ErrorKind};
 use std::fs::{self, File};
-use std::collections::BTreeMap;
-use std::sync::mpsc::{Sender, Receiver};
 
 use toml::{self, Value};
 
@@ -28,6 +25,7 @@ impl ConfigReader
     /// Create a new ConfigReader object. This should only be called in the setup() function.
     pub fn new() -> ConfigReader
     {
+        #![allow(unused_must_use)]
         // Get the current pwd
         let mut config = env::current_dir().ok().expect("huh?");
 
@@ -62,8 +60,7 @@ impl ConfigReader
                         fd.write(b"[General]\nname=\"RedStart\"\n\n[Networking]\naddress = \"127.0.0.1\"\nport = 8080\n\n[Logging]\nloglevel = \"NORMAL\"\nlogfile = \"log/default.log\"\n\n[Security]\nhttps = false\ncertificate = \"../../ssl/cert.pem\"\nkey = \"../../ssl/key.pem\"\n\n[MySQL]\nusername = \"root\"\npassword = \"DidRPwfMySQL\"\naddress = \"127.0.0.1\"\nport = 3306\n\n[LDAP]\naddress = \"localhost\"\nport = \"389\"\npassword = \"DidRPwfLDAP!\"\n"
 );
                         // Open the file in readonly mode again
-                        let mut fd = File::open(&config);
-                        fd.unwrap()
+                        File::open(&config).unwrap()
                     }
                     _ => panic!("File error: {}!", e),
                 }
@@ -108,5 +105,20 @@ impl ConfigReader
             Some(e) => e,
             None => default,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use toml;
+
+    // Create a mock (fake) ConfigReader for testing purposes
+    pub fn mock() -> ConfigReader
+    {
+        let toml = "[General]\nname=\"RedStart\"\n\n[Networking]\naddress = \"127.0.0.1\"\nport = 8080\n\n[Logging]\nloglevel = \"NORMAL\"\nlogfile = \"log/default.log\"\n\n[Security]\nhttps = false\ncertificate = \"../../ssl/cert.pem\"\nkey = \"../../ssl/key.pem\"\n\n[MySQL]\nusername = \"root\"\npassword = \"DidRPwfMySQL\"\naddress = \"127.0.0.1\"\nport = 3306\n\n[LDAP]\naddress = \"localhost\"\nport = \"389\"\npassword = \"DidRPwfLDAP!\"\n";
+        let value: toml::Value = toml.parse().unwrap();
+
+        ConfigReader { config_map: value }
     }
 }

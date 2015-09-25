@@ -29,8 +29,8 @@ impl API
     pub fn new() -> API
     {
         let mut config = ConfigReader::new();
-        let mut mysql = MySQL::new(&mut config);
-        let mut ggnet = GGNet::new(&mut config);
+        let mysql = MySQL::new(&mut config);
+        let ggnet = GGNet::new(&mut config);
         API
         {
             config: config,

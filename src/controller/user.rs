@@ -6,11 +6,8 @@
  */
 
 use std::io::Read;
-use rand::Rng;
 
 use serialize::json;
-use serialize::Encodable;
-use serialize::json::{ToJson,Encoder};
 
 use iron::prelude::*;
 use iron::status::{self, Status};
@@ -18,6 +15,7 @@ use iron::status::{self, Status};
 use api::{API, GGNet};
 use session::{Session, Store, SessionStore};
 use cookiesetter::CookieReq;
+use redstart::Controller;
 
 pub struct User
 {
@@ -25,32 +23,45 @@ pub struct User
 }
 impl User
 {
-    pub fn new(api: API) -> User
+    pub fn new(api: &API) -> User
     {
-        User { api: api }
+        User { api: api.clone() }
+    }
+}
+impl Controller for User
+{
+    fn name(&self) -> &'static str
+    {
+        "user"
     }
 
-    pub fn call(&self, model: &str, req: &mut Request) -> Response
+    fn call(&self, model: Option<String>, req: &mut Request) -> Response
     {
         // The Store is a Arc so no problem cloning it.
         let login = Login::new(self.api.sessions.clone());
         let logout = Logout::new(self.api.sessions.clone());
         let mut list = List::new(self.api.ggnet.clone());
 
-        let body: Box<Read + Send>;
         let (status, body) = match model
         {
-            "login" =>
+            Some(e) =>
             {
-                login.call(req)
-            },
-            "logout" =>
-            {
-                logout.call(req)
-            },
-            "list" =>
-            {
-                list.call(req)
+                match e.as_ref()
+                {
+                    "login" =>
+                    {
+                        login.call(req)
+                    },
+                    "logout" =>
+                    {
+                        logout.call(req)
+                    },
+                    "list" =>
+                    {
+                        list.call(req)
+                    },
+                    _ => (status::NotFound, "".to_string())
+                }
             }
             _ =>
             {
@@ -77,10 +88,7 @@ impl Login
         let mut req_string = String::new();
         req.body.read_to_string(&mut req_string).unwrap();
 
-        if cfg!(cfg = "debug")
-        {
-            println!("{}", req_string);
-        }
+        dbgprint!("{}", req_string);
 
         if  req_string == "username=testuser&password=testpass"
         {
@@ -88,10 +96,7 @@ impl Login
             //let mut rng = rand::thread_rnd();
 
             let session_key = "123456".to_string();
-            //if cfg!("debug")
-            //{
-                println!("{}", session_key);
-            //}
+            dbgprint!("{}", session_key);
 
             let session = Session::new(session_key.clone(), "testuser".to_string());
             self.sessionstore.put(&session_key, session);
@@ -141,11 +146,9 @@ impl List
     {
         List { ggnet: ggnet }
     }
-    pub fn call(&mut self, req: &mut Request) -> (Status, String)
+    pub fn call(&mut self, _: &mut Request) -> (Status, String)
     {
         let res_vec = self.ggnet.get_users("*");
-        let res_json = res_vec.to_json();
-
         (status::Ok, json::encode(&res_vec).unwrap())
     }
 }

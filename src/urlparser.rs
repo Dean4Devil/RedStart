@@ -29,7 +29,7 @@ impl fmt::Display for MalformedRequest {
 
 // Struct that is inserted as Key into req.extensions
 pub struct URL;
-impl Key for URL { type Value = [String; 2]; }
+impl Key for URL { type Value = (String, Option<String>, Option<String>); }
 
 /// The URLParser statically checks if the Request is conforming to the API structure-wise
 /// and will return a MalformedRequest Response if not.
@@ -38,27 +38,31 @@ impl BeforeMiddleware for URLParser
 {
     fn before(&self, req: &mut Request) -> IronResult<()>
     {
-        let path: Vec<String> = req.url.path.clone();
+        let collection: String;
+        let element: Option<String>;
+        let field: Option<String>;
 
-        if path.len() < 2 || path.len() > 3
-        {
-            return Err(IronError::new(MalformedRequest, status::BadRequest));
-        }
-        if path[0] == "" || path[1] == ""
-        {
-            return Err(IronError::new(MalformedRequest, status::BadRequest));
-        }
-        if path.len() == 3 && path[2] != ""
+        let mut path = req.url.path.clone();
+
+        if path.len() < 1 || path.len() > 3
         {
             return Err(IronError::new(MalformedRequest, status::BadRequest));
         }
 
-        // URL Structure gets added into req.extensions
-        let controller: String = path[0].clone();
-        let model: String = path[1].clone();
+        collection = path[0].clone();
+        element = match path.get_mut(1)
+        {
+            Some(e) => Some(e.clone()),
+            None => None,
+        };
+        field = match path.get_mut(2)
+        {
+            Some(e) => Some(e.clone()),
+            None => None,
+        };
 
-        let req_url: [String; 2] = [controller, model];
-        req.extensions.insert::<URL>(req_url);
+        let url_parts: (String, Option<String>, Option<String>) = (collection, element, field);
+        req.extensions.insert::<URL>(url_parts);
 
         Ok(())
     }

@@ -5,16 +5,14 @@
  * © Gregor Reitzenstein
  */
 
-use std::io::Read;
-
 use serialize::json;
-use serialize::Encodable;
-use serialize::json::{ToJson,Encoder};
 
 use iron::prelude::*;
 use iron::status::{self, Status};
 
 use api::{API, GGNet};
+
+use redstart::Controller;
 
 pub struct Group
 {
@@ -22,21 +20,33 @@ pub struct Group
 }
 impl Group
 {
-    pub fn new(api: API) -> Group
+    pub fn new(api: &API) -> Group
     {
-        Group { api: api }
+        Group { api: api.clone() }
     }
 
-    pub fn call(&self, model: &str, req: &mut Request) -> Response
+}
+
+impl Controller for Group
+{
+    fn name(&self) -> &'static str
+    {
+        "group"
+    }
+
+    fn call(&self, model: Option<String>, req: &mut Request) -> Response
     {
         let mut list = List::new(self.api.ggnet.clone());
 
-        let body: Box<Read + Send>;
         let (status, body) = match model
         {
-            "list" =>
+            Some(e) =>
             {
-                list.call(req)
+                match e.as_ref()
+                {
+                    "list" => list.call(req),
+                    _ => (status::NotFound, "".to_string())
+                }
             },
             _ =>
             {
@@ -60,11 +70,9 @@ impl List
         List { ggnet: ggnet }
     }
 
-    pub fn call(&mut self, req: &mut Request) -> (Status, String)
+    pub fn call(&mut self, _: &mut Request) -> (Status, String)
     {
         let res_vec = self.ggnet.get_groups("*");
-        let res_json = res_vec.to_json();
-
         (status::Ok, json::encode(&res_vec).unwrap())
     }
 }

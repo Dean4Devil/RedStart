@@ -5,40 +5,57 @@
  * © Gregor Reitzenstein
  */
 
-use std::io::Read;
 use iron::prelude::*;
 use iron::status;
+
+use api::API;
+use redstart::Controller;
 
 pub struct Reservation;
 
 impl Reservation
 {
-    pub fn new() -> Reservation
+    pub fn new(api: &API) -> Reservation
     {
         Reservation
     }
-    pub fn call(&self, model: &str, req: &mut Request) -> Response
+}
+
+impl Controller for Reservation
+{
+    fn name(&self) -> &'static str
+    {
+        "reservation"
+    }
+
+    fn call(&self, model: Option<String>, req: &mut Request) -> Response
     {
         let timetable = Timetable::new();
         let reservation = ReservationDisplay::new();
         // Currently statically defined, later pull from request.
-        let body: Box<Read + Send>;
         let (status, body) = match model
         {
-            "timetable" =>
+            Some(e) =>
             {
-               timetable.call(req) 
-            },
-            "reservation" =>
-            {
-                reservation.call(req)
-            },
+                match e.as_ref()
+                {
+                    "timetable" =>
+                    {
+                       timetable.call(req) 
+                    },
+                    "reservation" =>
+                    {
+                        reservation.call(req)
+                    },
+                    _ => (status::NotFound, "".to_string())
+                }
+            }
             _ =>
             {
                 (status::NotFound, "".to_string())
             },
         };
-        let mut res = Response::new();
+        let res = Response::new();
         res.set(status).set(body)
     }
 

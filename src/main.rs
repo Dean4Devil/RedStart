@@ -13,7 +13,7 @@
 
 #![allow(non_snake_case)]
 // TODO: Remove the need for this compilation attribute.
-#![allow(dead_code)]
+//#![allow(dead_code)]
 extern crate iron;
 extern crate hyper;
 extern crate url;
@@ -25,22 +25,24 @@ extern crate rand;
 extern crate mysql;
 
 //use std::error::Error;
-use std::os;
 use std::env;
-use std::thread;
-use std::path::PathBuf;
 use std::net::{SocketAddrV4, Ipv4Addr};
 
 use iron::prelude::*;
 //use iron::AroundMiddleware;
 
-//use controller::Reservation;
+macro_rules! dbgprint {
+    ($fmt:expr) => (if cfg!(debug){println!($fmt)});
+    ($fmt:expr, $($arg:tt)*) => (if cfg!(debug){println!($fmt, $($arg)*)});
+}
 
 use api::API;
 use urlparser::URLParser;
 use cookieparser::CookieParser;
 use cookiesetter::CookieSetter;
 use redstart::RedStart;
+
+use controller::{User, Group, Reservation};
 
 mod api;
 mod authentication;
@@ -52,7 +54,9 @@ mod cookiesetter;
 mod cookieparser;
 mod urlparser;
 mod session;
+mod permissions;
 mod redstart;
+
 
 /// The setup function
 ///
@@ -60,14 +64,26 @@ mod redstart;
 /// The main work this function does is building the chain and populating the API.
 fn setup() -> (API, iron::Chain)
 {
-    let mut api = API::new();
-    let redstart = RedStart::new(&api);
+    dbgprint!("Starting Setup phase");
+    let api = API::new();
+
+    // Create Controller Tree
+    let mut redstart = RedStart::new(&api);
+    redstart.add_controller(Box::new(controller::User::new(&api)));
+    redstart.add_controller(Box::new(controller::Group::new(&api)));
+    //redstart.add_controller(Box::new(controller::Reservation::new(&api)));
+    redstart.finish();
+    // Make RedStart unmutable
+    let redstart = redstart;
+
     let cookieparser = CookieParser::new(&api);
     let cookesetter = CookieSetter::new(&api);
+
     let mut chain = Chain::new(redstart);
     chain.link_before(URLParser);
     chain.link_before(cookieparser);
     chain.link_after(cookesetter);
+    dbgprint!("Setup has finished");
     return (api, chain);
 }
 
@@ -76,6 +92,10 @@ fn setup() -> (API, iron::Chain)
 /// This is the main loop of RedStart
 fn main()
 {
+    // The join guards are "unused", but have a reason!
+    #![allow(unused_variables, unused_assignments)]
+
+
     let (mut api, chain) = setup();
 
     let addr: Ipv4Addr = api.config.get_value_or::<String>("Networking.address", "localhost".to_string()).parse().unwrap();
@@ -87,6 +107,7 @@ fn main()
     // Is HTTPS enabled?
     if api.config.get_value_or::<bool>("Security.https", false)
     {
+        dbgprint!("HTTPS is enabled! Setting up...");
         // If yes, get two paths located at the current pwd.
         let mut cert_path = env::current_exe().unwrap();
         let mut key_path = cert_path.clone();
@@ -108,7 +129,7 @@ fn main()
         guards = Iron::new(chain).http(sock_addr).unwrap();
     }
 
-    println!("Started RedStart on port {}", port);
+    dbgprint!("Started RedStart on port {}", port);
 }
 
 
