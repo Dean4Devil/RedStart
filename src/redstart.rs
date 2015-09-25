@@ -13,8 +13,8 @@ use iron::prelude::*;
 use iron::Handler;
 use iron::status;
 
-use hyper::header::ContentType;
-use hyper::mime;
+use hyper::header::{Headers, ContentType};
+use hyper::mime::{Mime, TopLevel, SubLevel, Attr, Value};
 
 use api::API;
 use urlparser::URL;
@@ -71,8 +71,9 @@ impl Handler for RedStart
             },
         };
 
-        let mime: mime::Mime = "application/json".parse().unwrap();
-        res.headers.set(ContentType(mime));
+        res.headers.set(ContentType(Mime(TopLevel::Application,
+                                         SubLevel::Json,
+                                         vec![(Attr::Charset, Value::Utf8)])));
         Ok(res)
     }
 }
